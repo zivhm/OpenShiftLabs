@@ -2,82 +2,86 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://nirgeier.github.io/mkdocs/</loc>
-         <lastmod>2025-11-30</lastmod>
+         <lastmod>2025-12-04</lastmod>
     </url>
     <url>
          <loc>https://nirgeier.github.io/mkdocs/guides/</loc>
-         <lastmod>2025-11-30</lastmod>
+         <lastmod>2025-12-04</lastmod>
     </url>
     <url>
          <loc>https://nirgeier.github.io/mkdocs/guides/github-avatars-setup/</loc>
-         <lastmod>2025-11-30</lastmod>
+         <lastmod>2025-12-04</lastmod>
     </url>
     <url>
          <loc>https://nirgeier.github.io/mkdocs/guides/installation-guide/</loc>
-         <lastmod>2025-11-30</lastmod>
+         <lastmod>2025-12-04</lastmod>
     </url>
     <url>
          <loc>https://nirgeier.github.io/mkdocs/guides/understanding-init-script/</loc>
-         <lastmod>2025-11-30</lastmod>
-    </url>
-    <url>
-         <loc>https://nirgeier.github.io/mkdocs/guides/000-setup/</loc>
-         <lastmod>2025-11-30</lastmod>
-    </url>
-    <url>
-         <loc>https://nirgeier.github.io/mkdocs/guides/001-new-user/</loc>
-         <lastmod>2025-11-30</lastmod>
-    </url>
-    <url>
-         <loc>https://nirgeier.github.io/mkdocs/guides/002-new-project/</loc>
-         <lastmod>2025-11-30</lastmod>
-    </url>
-    <url>
-         <loc>https://nirgeier.github.io/mkdocs/guides/003-docker-lifecycle/</loc>
-         <lastmod>2025-11-30</lastmod>
-    </url>
-    <url>
-         <loc>https://nirgeier.github.io/mkdocs/guides/004-docker-pipeline/</loc>
-         <lastmod>2025-11-30</lastmod>
-    </url>
-    <url>
-         <loc>https://nirgeier.github.io/mkdocs/guides/005-hooks-setup/</loc>
-         <lastmod>2025-11-30</lastmod>
-    </url>
-    <url>
-         <loc>https://nirgeier.github.io/mkdocs/guides/006-images-imagestream/</loc>
-         <lastmod>2025-11-30</lastmod>
-    </url>
-    <url>
-         <loc>https://nirgeier.github.io/mkdocs/guides/007-deploying/</loc>
-         <lastmod>2025-11-30</lastmod>
-    </url>
-    <url>
-         <loc>https://nirgeier.github.io/mkdocs/guides/008-services-routes/</loc>
-         <lastmod>2025-11-30</lastmod>
-    </url>
-    <url>
-         <loc>https://nirgeier.github.io/mkdocs/guides/009-monitoring/</loc>
-         <lastmod>2025-11-30</lastmod>
+         <lastmod>2025-12-04</lastmod>
     </url>
     <url>
          <loc>https://nirgeier.github.io/mkdocs/reference/</loc>
-         <lastmod>2025-11-30</lastmod>
+         <lastmod>2025-12-04</lastmod>
     </url>
     <url>
          <loc>https://nirgeier.github.io/mkdocs/reference/api-reference/</loc>
-         <lastmod>2025-11-30</lastmod>
+         <lastmod>2025-12-04</lastmod>
     </url>
     <url>
          <loc>https://nirgeier.github.io/mkdocs/tutorials/</loc>
-         <lastmod>2025-11-30</lastmod>
+         <lastmod>2025-12-04</lastmod>
     </url>
     <url>
-         <loc>https://nirgeier.github.io/mkdocs/tutorials/01-basic-tutorial/</loc>
-         <lastmod>2025-11-30</lastmod>
+         <loc>https://nirgeier.github.io/mkdocs/tutorials/000-setup/</loc>
+         <lastmod>2025-12-04</lastmod>
     </url>
     <url>
-         <loc>https://nirgeier.github.io/mkdocs/tutorials/02-advanced-tutorial/</loc>
-         <lastmod>2025-11-30</lastmod>
+         <loc>https://nirgeier.github.io/mkdocs/tutorials/001-verify-cluster/</loc>
+         <lastmod>2025-12-04</lastmod>
+    </url>
+    <url>
+         <loc>https://nirgeier.github.io/mkdocs/tutorials/002-new-user/</loc>
+         <lastmod>2025-12-04</lastmod>
+    </url>
+    <url>
+         <loc>https://nirgeier.github.io/mkdocs/tutorials/003-new-project/</loc>
+         <lastmod>2025-12-04</lastmod>
+    </url>
+    <url>
+         <loc>https://nirgeier.github.io/mkdocs/tutorials/004-docker-lifecycle/</loc>
+         <lastmod>2025-12-04</lastmod>
+    </url>
+    <url>
+         <loc>https://nirgeier.github.io/mkdocs/tutorials/005-docker-pipeline/</loc>
+         <lastmod>2025-12-04</lastmod>
+    </url>
+    <url>
+         <loc>https://nirgeier.github.io/mkdocs/tutorials/006-hooks-setup/</loc>
+         <lastmod>2025-12-04</lastmod>
+    </url>
+    <url>
+         <loc>https://nirgeier.github.io/mkdocs/tutorials/007-images-imagestream/</loc>
+         <lastmod>2025-12-04</lastmod>
+    </url>
+    <url>
+         <loc>https://nirgeier.github.io/mkdocs/tutorials/008-deploying/</loc>
+         <lastmod>2025-12-04</lastmod>
+    </url>
+    <url>
+         <loc>https://nirgeier.github.io/mkdocs/tutorials/009-services-routes/</loc>
+         <lastmod>2025-12-04</lastmod>
+    </url>
+    <url>
+         <loc>https://nirgeier.github.io/mkdocs/tutorials/010-monitoring/</loc>
+         <lastmod>2025-12-04</lastmod>
+    </url>
+    <url>
+         <loc>https://nirgeier.github.io/mkdocs/tutorials/011-logging/</loc>
+         <lastmod>2025-12-04</lastmod>
+    </url>
+    <url>
+         <loc>https://nirgeier.github.io/mkdocs/tutorials/012-scaling/</loc>
+         <lastmod>2025-12-04</lastmod>
     </url>
 </urlset>
