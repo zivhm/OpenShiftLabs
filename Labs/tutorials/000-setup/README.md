@@ -417,6 +417,7 @@ After logging in, you'll see the web console interface.
    - This is the perspective switcher dropdown
 
 this is not correct anymore
+
 ![alt text](image-1.png)
 
 2. **Click the perspective switcher** to see available perspectives:
@@ -566,7 +567,7 @@ Now that you have a project, let's explore its structure.
    - **Workloads** tab: View pods, deployments, etc.
    - **RoleBindings** tab: User access control
 
-![alt text](image-6.png)
+![alt text](image-6.png)  # TODO: update all image names
 
 ---
 
