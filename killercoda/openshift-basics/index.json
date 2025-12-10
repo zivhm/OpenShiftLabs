@@ -1,0 +1,12 @@
+{
+  "title": "OpenShift Labs (Bootstrap)",
+  "description": "Bootstrap the environment, then follow the labs on GitHub Pages.",
+  "backend": { "imageid": "ubuntu:2004" },
+  "environment": { "showide": true, "uilayout": "editor-terminal" },
+  "details": {
+    "intro": { "text": "intro.md" },
+    "finish": { "text": "finish.md" },
+    "steps": [ { "title": "Setup and Open Labs", "text": "step1/task.md", "verify": "step1/verify.sh" } ],
+    "assets": { "host01": [ { "file": "assets/setup.sh", "target": "/usr/local/bin/openshift-setup.sh" } ] }
+  }
+}
