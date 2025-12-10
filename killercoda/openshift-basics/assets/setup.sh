@@ -16,5 +16,8 @@ fi
 
 echo "Environment ready. Proceed to the labs page."
 
+# Mark completion for verification (home-aware)
+touch "$HOME/.openshift_setup_done" || true
+
 # Mark completion for verification
 touch /root/.openshift_setup_done || true
