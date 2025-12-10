@@ -7,6 +7,6 @@
     "intro": { "text": "intro.md" },
     "finish": { "text": "finish.md" },
     "steps": [ { "title": "Setup and Open Labs", "text": "step1/task.md", "verify": "step1/verify.sh" } ],
-    "assets": { "host01": [ { "file": "assets/setup.sh", "target": "/usr/local/bin/openshift-setup.sh" } ] }
+    "assets": { "host01": [ { "file": "assets/setup.sh", "target": "/root/setup.sh" } ] }
   }
 }

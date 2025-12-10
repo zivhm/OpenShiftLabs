@@ -15,3 +15,6 @@ if ! command -v oc >/dev/null 2>&1; then
 fi
 
 echo "Environment ready. Proceed to the labs page."
+
+# Mark completion for verification
+touch /root/.openshift_setup_done || true

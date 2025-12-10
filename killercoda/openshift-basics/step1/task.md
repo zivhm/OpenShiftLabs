@@ -2,7 +2,7 @@
 
 1) Initialize the environment:
 ```bash
-sudo bash /usr/local/bin/openshift-setup.sh
+bash /root/setup.sh
 ```
 
 2) Open the labs site:
