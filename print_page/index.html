@@ -748,14 +748,11 @@ We&rsquo;ll learn how to use both the web console and command-line interface.</p
 <li>Open your browser and navigate to: <code>https://console-openshift-console.apps-crc.testing</code></li>
 <li>Accept the SSL certificate warning (safe for local development)</li>
 <li>Log in as <code>developer</code> / <code>developer</code></li>
-<li>You&rsquo;ll see the OpenShift console with two perspectives:</li>
-<li><strong>Developer</strong>: Application-focused view (default for developers)</li>
-<li><strong>Administrator</strong>: Infrastructure and cluster management</li>
+<li>You&rsquo;ll see the OpenShift web console home page</li>
 </ol>
 <p><img alt="alt text" src="../tutorials/000-setup/overview.png" /></p>
 <hr />
 <h3 id="tutorials-000-setup-step-7-create-your-first-project">Step 7: Create Your First Project</h3>
-<p>In Developer perspective:</p>
 <ol>
 <li>Click <strong>Home</strong> → <strong>Projects</strong> → <strong>Create Project</strong></li>
 </ol>
@@ -863,36 +860,1077 @@ We&rsquo;ll learn how to use both the web console and command-line interface.</p
 </span></code></pre></div>
 <hr />
 <h2 id="tutorials-000-setup-next-steps">Next Steps</h2>
-<p>Continue to <a href="#tutorials-001-verify-cluster">Lab 001: Verify Cluster</a> to learn about cluster health monitoring.</p></section><section class="print-page" id="tutorials-001-verify-cluster" heading-number="2.2"><h1 id="tutorials-001-verify-cluster-001-verify-cluster-verifying-openshift-cluster-health">001-Verify-Cluster — Verifying OpenShift Cluster Health</h1>
-<p>This module covers verifying the OpenShift cluster health and checking that all components are running properly.</p>
-<h2 id="tutorials-001-verify-cluster-objectives">Objectives</h2>
+<p>Continue to <a href="#tutorials-001-verify-cluster">Lab 001: Verify Cluster</a> to learn about cluster health monitoring.</p></section><section class="print-page" id="tutorials-001-verify-cluster" heading-number="2.2"><h1 id="tutorials-001-verify-cluster-lab-001-verify-cluster-health">Lab 001: Verify Cluster Health</h1>
+<h2 id="tutorials-001-verify-cluster-overview">Overview</h2>
+<p>This lab covers detailed cluster health verification including node status, cluster operators, core namespaces, events monitoring, and container runtime checks using both CLI and web console.</p>
+<h2 id="tutorials-001-verify-cluster-prerequisites">Prerequisites</h2>
 <ul>
-<li>Verify cluster node status and health.</li>
-<li>Check cluster operators status.</li>
-<li>Validate cluster resources and capacity.</li>
+<li>Completed <a href="#tutorials-000-setup">Lab 000: Installation and Initial Setup</a></li>
+<li>OpenShift Local (CRC) running</li>
+<li><code>oc</code> CLI tool installed and configured</li>
+<li>Logged in as <code>developer</code> or <code>kubeadmin</code></li>
 </ul>
-<h2 id="tutorials-001-verify-cluster-tasks">Tasks</h2>
-<ol>
-<li>Use <code>oc get nodes</code> to verify all nodes are in Ready state.</li>
-<li>Check cluster operators with <code>oc get clusteroperators</code> and ensure all are Available.</li>
-<li>Review cluster resource usage using <code>oc adm top nodes</code>.</li>
-<li>Verify API server connectivity and version with <code>oc version</code>.</li>
-</ol>
-<p>Estimated time: 20–30 minutes</p></section><section class="print-page" id="tutorials-002-new-user" heading-number="2.3"><h1 id="tutorials-002-new-user-002-new-user-creating-and-managing-users-and-roles">002-New User — Creating and managing users and roles</h1>
-<p>This module teaches how to create and manage developer and operator users, project roles, and RBAC policies in OpenShift.</p>
-<h2 id="tutorials-002-new-user-objectives">Objectives</h2>
+<hr />
+<h2 id="tutorials-001-verify-cluster-lab-instructions">Lab Instructions</h2>
+<h3 id="tutorials-001-verify-cluster-step-1-check-node-health">Step 1: Check Node Health</h3>
+<p>In Lab 000, you verified basic connectivity with <code>oc get nodes</code>. Now let&rsquo;s examine node health in detail:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#tutorials-001-verify-cluster-__codelineno-0-1"></a>oc<span class="w"> </span>get<span class="w"> </span>nodes<span class="w"> </span>-o<span class="w"> </span>wide
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#tutorials-001-verify-cluster-__codelineno-1-1"></a>NAME   STATUS   ROLES                         AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE   KERNEL-VERSION   CONTAINER-RUNTIME
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#tutorials-001-verify-cluster-__codelineno-1-2"></a>crc    Ready    control-plane,master,worker   5d    v1.xx.x   192.168...    &lt;none&gt;        ...        ...              cri-o://...
+</span></code></pre></div>
+<p><strong>Node Status Indicators:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ready</strong></td>
+<td>Node is healthy and accepting workloads</td>
+</tr>
+<tr>
+<td><strong>NotReady</strong></td>
+<td>Node has issues and cannot accept new workloads</td>
+</tr>
+<tr>
+<td><strong>SchedulingDisabled</strong></td>
+<td>Node is cordoned (administrative action)</td>
+</tr>
+</tbody>
+</table>
+<p>Get detailed node information:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#tutorials-001-verify-cluster-__codelineno-2-1"></a>oc<span class="w"> </span>describe<span class="w"> </span>node<span class="w"> </span>crc
+</span></code></pre></div>
+<p>This shows:</p>
 <ul>
-<li>Create users or service accounts for developers and operators.</li>
-<li>Assign roles and permissions using RBAC (RoleBindings and ClusterRoleBindings).</li>
-<li>Understand best practices for least-privilege access and multi-team collaboration.</li>
+<li>Node conditions (Ready, MemoryPressure, DiskPressure, PIDPressure)</li>
+<li>Allocatable resources (CPU, memory, pods)</li>
+<li>System information (OS, kernel, container runtime)</li>
+<li>Resource usage</li>
 </ul>
-<h2 id="tutorials-002-new-user-tasks">Tasks</h2>
+<hr />
+<h3 id="tutorials-001-verify-cluster-step-2-check-cluster-operators">Step 2: Check Cluster Operators</h3>
+<p>Cluster operators manage core OpenShift components. Verify all are healthy:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#tutorials-001-verify-cluster-__codelineno-3-1"></a>oc<span class="w"> </span>get<span class="w"> </span>clusteroperators
+</span></code></pre></div>
+<p>Expected output (sample):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#tutorials-001-verify-cluster-__codelineno-4-1"></a>NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#tutorials-001-verify-cluster-__codelineno-4-2"></a>authentication                             4.x.x     True        False         False      5d
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#tutorials-001-verify-cluster-__codelineno-4-3"></a>cloud-credential                           4.x.x     True        False         False      5d
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#tutorials-001-verify-cluster-__codelineno-4-4"></a>cluster-autoscaler                         4.x.x     True        False         False      5d
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#tutorials-001-verify-cluster-__codelineno-4-5"></a>config-operator                            4.x.x     True        False         False      5d
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#tutorials-001-verify-cluster-__codelineno-4-6"></a>console                                    4.x.x     True        False         False      5d
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#tutorials-001-verify-cluster-__codelineno-4-7"></a>dns                                        4.x.x     True        False         False      5d
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#tutorials-001-verify-cluster-__codelineno-4-8"></a>etcd                                       4.x.x     True        False         False      5d
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#tutorials-001-verify-cluster-__codelineno-4-9"></a>image-registry                             4.x.x     True        False         False      5d
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#tutorials-001-verify-cluster-__codelineno-4-10"></a>ingress                                    4.x.x     True        False         False      5d
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#tutorials-001-verify-cluster-__codelineno-4-11"></a>kube-apiserver                             4.x.x     True        False         False      5d
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#tutorials-001-verify-cluster-__codelineno-4-12"></a>kube-controller-manager                    4.x.x     True        False         False      5d
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#tutorials-001-verify-cluster-__codelineno-4-13"></a>kube-scheduler                             4.x.x     True        False         False      5d
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#tutorials-001-verify-cluster-__codelineno-4-14"></a>monitoring                                 4.x.x     True        False         False      5d
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#tutorials-001-verify-cluster-__codelineno-4-15"></a>network                                    4.x.x     True        False         False      5d
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#tutorials-001-verify-cluster-__codelineno-4-16"></a>node-tuning                                4.x.x     True        False         False      5d
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#tutorials-001-verify-cluster-__codelineno-4-17"></a>openshift-apiserver                        4.x.x     True        False         False      5d
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#tutorials-001-verify-cluster-__codelineno-4-18"></a>openshift-controller-manager               4.x.x     True        False         False      5d
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#tutorials-001-verify-cluster-__codelineno-4-19"></a>openshift-samples                          4.x.x     True        False         False      5d
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#tutorials-001-verify-cluster-__codelineno-4-20"></a>operator-lifecycle-manager                 4.x.x     True        False         False      5d
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#tutorials-001-verify-cluster-__codelineno-4-21"></a>operator-lifecycle-manager-catalog         4.x.x     True        False         False      5d
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#tutorials-001-verify-cluster-__codelineno-4-22"></a>operator-lifecycle-manager-packageserver   4.x.x     True        False         False      5d
+</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#tutorials-001-verify-cluster-__codelineno-4-23"></a>service-ca                                 4.x.x     True        False         False      5d
+</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#tutorials-001-verify-cluster-__codelineno-4-24"></a>storage                                    4.x.x     True        False         False      5d
+</span></code></pre></div>
+<p><strong>Status Columns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AVAILABLE</strong></td>
+<td>Operator is functional and serving requests</td>
+</tr>
+<tr>
+<td><strong>PROGRESSING</strong></td>
+<td>Operator is rolling out changes or updates</td>
+</tr>
+<tr>
+<td><strong>DEGRADED</strong></td>
+<td>Operator has errors or partial functionality</td>
+</tr>
+</tbody>
+</table>
+<p>Check for any degraded operators:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#tutorials-001-verify-cluster-__codelineno-5-1"></a>oc<span class="w"> </span>get<span class="w"> </span>clusteroperators<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;True.*False.*False&quot;</span>
+</span></code></pre></div>
+<p>If all operators are healthy, only the header line appears.</p>
+<p>Get details on a specific operator:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#tutorials-001-verify-cluster-__codelineno-6-1"></a>oc<span class="w"> </span>describe<span class="w"> </span>clusteroperator<span class="w"> </span>kube-apiserver
+</span></code></pre></div>
+<hr />
+<h3 id="tutorials-001-verify-cluster-step-3-verify-core-namespaces">Step 3: Verify Core Namespaces</h3>
+<p>List all namespaces to ensure core components are present:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#tutorials-001-verify-cluster-__codelineno-7-1"></a>oc<span class="w"> </span>get<span class="w"> </span>namespaces
+</span></code></pre></div>
+<p>Expected output includes these core namespaces:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#tutorials-001-verify-cluster-__codelineno-8-1"></a>NAME                                               STATUS   AGE
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#tutorials-001-verify-cluster-__codelineno-8-2"></a>default                                            Active   5d
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#tutorials-001-verify-cluster-__codelineno-8-3"></a>kube-node-lease                                    Active   5d
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#tutorials-001-verify-cluster-__codelineno-8-4"></a>kube-public                                        Active   5d
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#tutorials-001-verify-cluster-__codelineno-8-5"></a>kube-system                                        Active   5d
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#tutorials-001-verify-cluster-__codelineno-8-6"></a>openshift                                          Active   5d
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#tutorials-001-verify-cluster-__codelineno-8-7"></a>openshift-apiserver                                Active   5d
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#tutorials-001-verify-cluster-__codelineno-8-8"></a>openshift-authentication                           Active   5d
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#tutorials-001-verify-cluster-__codelineno-8-9"></a>openshift-console                                  Active   5d
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#tutorials-001-verify-cluster-__codelineno-8-10"></a>openshift-controller-manager                       Active   5d
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#tutorials-001-verify-cluster-__codelineno-8-11"></a>openshift-dns                                      Active   5d
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#tutorials-001-verify-cluster-__codelineno-8-12"></a>openshift-etcd                                     Active   5d
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#tutorials-001-verify-cluster-__codelineno-8-13"></a>openshift-image-registry                           Active   5d
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#tutorials-001-verify-cluster-__codelineno-8-14"></a>openshift-ingress                                  Active   5d
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#tutorials-001-verify-cluster-__codelineno-8-15"></a>openshift-kube-apiserver                           Active   5d
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#tutorials-001-verify-cluster-__codelineno-8-16"></a>openshift-kube-controller-manager                  Active   5d
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#tutorials-001-verify-cluster-__codelineno-8-17"></a>openshift-kube-scheduler                           Active   5d
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#tutorials-001-verify-cluster-__codelineno-8-18"></a>openshift-monitoring                               Active   5d
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#tutorials-001-verify-cluster-__codelineno-8-19"></a>openshift-network-diagnostics                      Active   5d
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#tutorials-001-verify-cluster-__codelineno-8-20"></a>openshift-operator-lifecycle-manager               Active   5d
+</span></code></pre></div>
+<p>Check pods in critical namespaces:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#tutorials-001-verify-cluster-__codelineno-9-1"></a>oc<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>openshift-kube-apiserver
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#tutorials-001-verify-cluster-__codelineno-9-2"></a>oc<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>openshift-etcd
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#tutorials-001-verify-cluster-__codelineno-9-3"></a>oc<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>openshift-ingress
+</span></code></pre></div>
+<p>All pods should be in <code>Running</code> status.</p>
+<hr />
+<h3 id="tutorials-001-verify-cluster-step-4-view-cluster-in-web-console">Step 4: View Cluster in Web Console</h3>
 <ol>
-<li>Create a developer and operator user via the web console (User Management → Users).</li>
-<li>Assign roles using the web console (User Management → RoleBindings).</li>
-<li>View and compare RoleBindings vs ClusterRoleBindings in the console.</li>
+<li>Open the web console: <code>https://console-openshift-console.apps-crc.testing</code></li>
+<li>Log in as <code>kubeadmin</code> (use admin credentials from Lab 000)</li>
+<li>Navigate to <strong>Home</strong> → <strong>Overview</strong></li>
 </ol>
-<p>Estimated time: 20–40 minutes</p></section><section class="print-page" id="tutorials-003-new-project" heading-number="2.4"><h1 id="tutorials-003-new-project-lab-003-creating-your-first-openshift-project">Lab 003: Creating Your First OpenShift Project</h1>
+<p>The Overview dashboard shows cluster information and status.</p>
+<ol>
+<li>Click <strong>Compute</strong> → <strong>Nodes</strong> → <strong>crc</strong></li>
+</ol>
+<p>This shows detailed node information including:</p>
+<ul>
+<li>Running pods</li>
+<li>Node conditions</li>
+<li>Events</li>
+</ul>
+<p><img alt="alt text" src="../tutorials/001-verify-cluster/node-details.png" /></p>
+<hr />
+<h3 id="tutorials-001-verify-cluster-step-5-check-cluster-events">Step 5: Check Cluster Events</h3>
+<p>View recent cluster events:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#tutorials-001-verify-cluster-__codelineno-10-1"></a>oc<span class="w"> </span>get<span class="w"> </span>events<span class="w"> </span>-A<span class="w"> </span>--sort-by<span class="o">=</span><span class="s1">&#39;.lastTimestamp&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-20
+</span></code></pre></div>
+<p>This shows the last 20 events across all namespaces, useful for identifying recent issues.</p>
+<p>Filter for warning/error events:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#tutorials-001-verify-cluster-__codelineno-11-1"></a>oc<span class="w"> </span>get<span class="w"> </span>events<span class="w"> </span>-A<span class="w"> </span>--field-selector<span class="w"> </span>type!<span class="o">=</span>Normal
+</span></code></pre></div>
+<hr />
+<h3 id="tutorials-001-verify-cluster-step-6-verify-container-runtime">Step 6: Verify Container Runtime</h3>
+<p>Check that the container runtime is functioning:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#tutorials-001-verify-cluster-__codelineno-12-1"></a>oc<span class="w"> </span>debug<span class="w"> </span>node/crc
+</span></code></pre></div>
+<p>This starts a debug pod on the node. Once inside:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#tutorials-001-verify-cluster-__codelineno-13-1"></a>chroot<span class="w"> </span>/host<span class="w">            </span><span class="c1">#  Access the host filesystem</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#tutorials-001-verify-cluster-__codelineno-13-2"></a>crictl<span class="w"> </span>version<span class="w">          </span><span class="c1">#  Check crictl version</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#tutorials-001-verify-cluster-__codelineno-13-3"></a>crictl<span class="w"> </span>ps<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10<span class="w">    </span><span class="c1">#  List running containers</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#tutorials-001-verify-cluster-__codelineno-13-4"></a><span class="nb">exit</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#tutorials-001-verify-cluster-__codelineno-13-5"></a><span class="nb">exit</span>
+</span></code></pre></div>
+<p>This verifies CRI-O (the container runtime) is working and shows running containers. \
+The role of CRI-O is to manage container lifecycle on the node.</p>
+<hr />
+<h2 id="tutorials-001-verify-cluster-understanding-cluster-health">Understanding Cluster Health</h2>
+<h3 id="tutorials-001-verify-cluster-healthy-cluster-indicators">Healthy Cluster Indicators</h3>
+<ul>
+<li>All nodes show <code>STATUS: Ready</code></li>
+<li>All cluster operators show <code>AVAILABLE: True</code>, <code>PROGRESSING: False</code>, <code>DEGRADED: False</code></li>
+<li>Core namespace pods are <code>Running</code></li>
+<li>API server responds to <code>oc</code> commands</li>
+<li>No persistent error events</li>
+</ul>
+<h3 id="tutorials-001-verify-cluster-unhealthy-cluster-indicators">Unhealthy Cluster Indicators</h3>
+<ul>
+<li>Nodes show <code>NotReady</code> status</li>
+<li>Operators show <code>DEGRADED: True</code> or <code>AVAILABLE: False</code></li>
+<li>Pods in <code>CrashLoopBackOff</code>, <code>Error</code>, or <code>Pending</code> state</li>
+<li>Repeated error events in <code>oc get events</code></li>
+<li>API server timeouts or connection failures</li>
+</ul>
+<hr />
+<h2 id="tutorials-001-verify-cluster-troubleshooting">Troubleshooting</h2>
+<h3 id="tutorials-001-verify-cluster-operators-showing-degraded-or-not-available">Operators showing DEGRADED or not AVAILABLE</h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#tutorials-001-verify-cluster-__codelineno-14-1"></a><span class="c1"># Get operator list</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#tutorials-001-verify-cluster-__codelineno-14-2"></a>oc<span class="w"> </span>get<span class="w"> </span>clusteroperators
+</span></code></pre></div>
+<p>Expected output (sample):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#tutorials-001-verify-cluster-__codelineno-15-1"></a>NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#tutorials-001-verify-cluster-__codelineno-15-2"></a>authentication                             4.19.8    True        False         False      163m
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#tutorials-001-verify-cluster-__codelineno-15-3"></a>config-operator                            4.19.8    True        False         False      99d
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#tutorials-001-verify-cluster-__codelineno-15-4"></a>console                                    4.19.8    True        False         False      163m
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#tutorials-001-verify-cluster-__codelineno-15-5"></a>control-plane-machine-set                  4.19.8    True        False         False      99d
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#tutorials-001-verify-cluster-__codelineno-15-6"></a>dns                                        4.19.8    True        False         False      163m
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#tutorials-001-verify-cluster-__codelineno-15-7"></a>etcd                                       4.19.8    True        False         False      99d
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#tutorials-001-verify-cluster-__codelineno-15-8"></a>image-registry                             4.19.8    True        False         False      163m
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#tutorials-001-verify-cluster-__codelineno-15-9"></a>ingress                                    4.19.8    True        False         False      99d
+</span></code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#tutorials-001-verify-cluster-__codelineno-16-1"></a><span class="c1"># Get operator details</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#tutorials-001-verify-cluster-__codelineno-16-2"></a>oc<span class="w"> </span>describe<span class="w"> </span>clusteroperator<span class="w"> </span>&lt;operator-name&gt;
+</span></code></pre></div>
+<p>Expected output (sample):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#tutorials-001-verify-cluster-__codelineno-17-1"></a>&gt; oc describe clusteroperator kube-apiserver
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#tutorials-001-verify-cluster-__codelineno-17-2"></a>Name:         kube-apiserver
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#tutorials-001-verify-cluster-__codelineno-17-3"></a>Namespace:
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#tutorials-001-verify-cluster-__codelineno-17-4"></a>Labels:       &lt;none&gt;
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#tutorials-001-verify-cluster-__codelineno-17-5"></a>Annotations:  exclude.release.openshift.io/internal-openshift-hosted: true
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#tutorials-001-verify-cluster-__codelineno-17-6"></a>              include.release.openshift.io/self-managed-high-availability: true
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#tutorials-001-verify-cluster-__codelineno-17-7"></a>              include.release.openshift.io/single-node-developer: true
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#tutorials-001-verify-cluster-__codelineno-17-8"></a>API Version:  config.openshift.io/v1
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#tutorials-001-verify-cluster-__codelineno-17-9"></a>Kind:         ClusterOperator
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#tutorials-001-verify-cluster-__codelineno-17-10"></a>Metadata:
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#tutorials-001-verify-cluster-__codelineno-17-11"></a>   ...
+</span></code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#tutorials-001-verify-cluster-__codelineno-18-1"></a><span class="c1"># Check operator pods</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#tutorials-001-verify-cluster-__codelineno-18-2"></a>oc<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>openshift-&lt;operator-namespace&gt;
+</span></code></pre></div>
+<p>Expected output (sample):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#tutorials-001-verify-cluster-__codelineno-19-1"></a>&gt; oc get pods -n openshift-kube-apiserver
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#tutorials-001-verify-cluster-__codelineno-19-2"></a>NAME                 READY   STATUS    RESTARTS   AGE
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#tutorials-001-verify-cluster-__codelineno-19-3"></a>kube-apiserver-crc   5/5     Running   6          3d1h
+</span></code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#tutorials-001-verify-cluster-__codelineno-20-1"></a><span class="c1"># View operator logs</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#tutorials-001-verify-cluster-__codelineno-20-2"></a>oc<span class="w"> </span>logs<span class="w"> </span>-n<span class="w"> </span>openshift-&lt;operator-namespace&gt;<span class="w"> </span>&lt;pod-name&gt;
+</span></code></pre></div>
+<p>Expected output (sample):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#tutorials-001-verify-cluster-__codelineno-21-1"></a>&gt; oc logs -n openshift-kube-apiserver kube-apiserver-crc
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#tutorials-001-verify-cluster-__codelineno-21-2"></a>flock: getting lock took 0.000004 seconds
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#tutorials-001-verify-cluster-__codelineno-21-3"></a>Copying system trust bundle ...
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#tutorials-001-verify-cluster-__codelineno-21-4"></a>I1211 13:04:11.806886       1 loader.go:402] Config loaded from file:  /etc/kubernetes/static-pod-resources/configmaps/kube-apiserver-cert-syncer-kubeconfig/kubeconfig
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#tutorials-001-verify-cluster-__codelineno-21-5"></a>...
+</span></code></pre></div>
+<hr />
+<h3 id="tutorials-001-verify-cluster-nodes-showing-notready">Nodes showing NotReady</h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#tutorials-001-verify-cluster-__codelineno-22-1"></a><span class="c1"># Describe the node to see conditions</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#tutorials-001-verify-cluster-__codelineno-22-2"></a>oc<span class="w"> </span>describe<span class="w"> </span>node<span class="w"> </span>&lt;node-name&gt;
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#tutorials-001-verify-cluster-__codelineno-22-3"></a>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#tutorials-001-verify-cluster-__codelineno-22-4"></a><span class="c1"># Check node events</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#tutorials-001-verify-cluster-__codelineno-22-5"></a>oc<span class="w"> </span>get<span class="w"> </span>events<span class="w"> </span>--field-selector<span class="w"> </span>involvedObject.name<span class="o">=</span>&lt;node-name&gt;
+</span></code></pre></div>
+<p>For CRC specifically, this usually indicates the VM needs to be restarted:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#tutorials-001-verify-cluster-__codelineno-23-1"></a>crc<span class="w"> </span>stop
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#tutorials-001-verify-cluster-__codelineno-23-2"></a>crc<span class="w"> </span>start
+</span></code></pre></div>
+<hr />
+<h3 id="tutorials-001-verify-cluster-api-server-not-responding">API server not responding</h3>
+<p>Verify CRC is running:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#tutorials-001-verify-cluster-__codelineno-24-1"></a>crc<span class="w"> </span>status
+</span></code></pre></div>
+<p>Check authentication:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#tutorials-001-verify-cluster-__codelineno-25-1"></a>oc<span class="w"> </span>whoami
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#tutorials-001-verify-cluster-__codelineno-25-2"></a><span class="c1"># If not authenticated, log in again</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#tutorials-001-verify-cluster-__codelineno-25-3"></a>oc<span class="w"> </span>login<span class="w"> </span>-u<span class="w"> </span>developer<span class="w"> </span>-p<span class="w"> </span>developer<span class="w"> </span>https://api.crc.testing:6443
+</span></code></pre></div>
+<hr />
+<h2 id="tutorials-001-verify-cluster-quick-reference">Quick Reference</h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#tutorials-001-verify-cluster-__codelineno-26-1"></a><span class="c1"># Nodes</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#tutorials-001-verify-cluster-__codelineno-26-2"></a>oc<span class="w"> </span>get<span class="w"> </span>nodes<span class="w"> </span>-o<span class="w"> </span>wide<span class="w">                                </span><span class="c1"># List all nodes with details</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#tutorials-001-verify-cluster-__codelineno-26-3"></a>oc<span class="w"> </span>describe<span class="w"> </span>node<span class="w"> </span>&lt;node-name&gt;<span class="w">                        </span><span class="c1"># Detailed node information</span>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#tutorials-001-verify-cluster-__codelineno-26-4"></a>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#tutorials-001-verify-cluster-__codelineno-26-5"></a><span class="c1"># Cluster Operators</span>
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#tutorials-001-verify-cluster-__codelineno-26-6"></a>oc<span class="w"> </span>get<span class="w"> </span>clusteroperators<span class="w">                             </span><span class="c1"># List all operators</span>
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#tutorials-001-verify-cluster-__codelineno-26-7"></a>oc<span class="w"> </span>describe<span class="w"> </span>clusteroperator<span class="w"> </span>&lt;operator-name&gt;<span class="w">         </span><span class="c1"># Operator details</span>
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#tutorials-001-verify-cluster-__codelineno-26-8"></a>
+</span><span id="__span-26-9"><a id="__codelineno-26-9" name="__codelineno-26-9" href="#tutorials-001-verify-cluster-__codelineno-26-9"></a><span class="c1"># Namespaces and Pods</span>
+</span><span id="__span-26-10"><a id="__codelineno-26-10" name="__codelineno-26-10" href="#tutorials-001-verify-cluster-__codelineno-26-10"></a>oc<span class="w"> </span>get<span class="w"> </span>namespaces<span class="w">                                   </span><span class="c1"># List all namespaces</span>
+</span><span id="__span-26-11"><a id="__codelineno-26-11" name="__codelineno-26-11" href="#tutorials-001-verify-cluster-__codelineno-26-11"></a>oc<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-A<span class="w">                                      </span><span class="c1"># List all pods</span>
+</span><span id="__span-26-12"><a id="__codelineno-26-12" name="__codelineno-26-12" href="#tutorials-001-verify-cluster-__codelineno-26-12"></a>
+</span><span id="__span-26-13"><a id="__codelineno-26-13" name="__codelineno-26-13" href="#tutorials-001-verify-cluster-__codelineno-26-13"></a><span class="c1"># Events</span>
+</span><span id="__span-26-14"><a id="__codelineno-26-14" name="__codelineno-26-14" href="#tutorials-001-verify-cluster-__codelineno-26-14"></a>oc<span class="w"> </span>get<span class="w"> </span>events<span class="w"> </span>-A<span class="w"> </span>--sort-by<span class="o">=</span><span class="s1">&#39;.lastTimestamp&#39;</span><span class="w">         </span><span class="c1"># Recent events</span>
+</span><span id="__span-26-15"><a id="__codelineno-26-15" name="__codelineno-26-15" href="#tutorials-001-verify-cluster-__codelineno-26-15"></a>oc<span class="w"> </span>get<span class="w"> </span>events<span class="w"> </span>-A<span class="w"> </span>--field-selector<span class="w"> </span>type!<span class="o">=</span>Normal<span class="w">      </span><span class="c1"># Warning/error events</span>
+</span><span id="__span-26-16"><a id="__codelineno-26-16" name="__codelineno-26-16" href="#tutorials-001-verify-cluster-__codelineno-26-16"></a>
+</span><span id="__span-26-17"><a id="__codelineno-26-17" name="__codelineno-26-17" href="#tutorials-001-verify-cluster-__codelineno-26-17"></a><span class="c1"># Debugging</span>
+</span><span id="__span-26-18"><a id="__codelineno-26-18" name="__codelineno-26-18" href="#tutorials-001-verify-cluster-__codelineno-26-18"></a>oc<span class="w"> </span>debug<span class="w"> </span>node/&lt;node-name&gt;<span class="w">                           </span><span class="c1"># Start debug pod on node</span>
+</span></code></pre></div>
+<hr />
+<h2 id="tutorials-001-verify-cluster-next-steps">Next Steps</h2>
+<p>Continue to <a href="#tutorials-002-new-user">Lab 002: Create New User</a> to learn about user management in OpenShift.</p></section><section class="print-page" id="tutorials-002-new-user" heading-number="2.3"><h1 id="tutorials-002-new-user-lab-002-understanding-roles-and-permissions-rbac">Lab 002: Understanding Roles and Permissions (RBAC)</h1>
+<h2 id="tutorials-002-new-user-overview">Overview</h2>
+<p>This lab covers Role-Based Access Control (RBAC) in OpenShift, including roles, role bindings, and permission management using both CLI and web console.</p>
+<h2 id="tutorials-002-new-user-prerequisites">Prerequisites</h2>
+<ul>
+<li>Completed <a href="#tutorials-001-verify-cluster">Lab 001: Verify Cluster Health</a></li>
+<li>OpenShift Local (CRC) running</li>
+<li>Access to both <code>developer</code> and <code>kubeadmin</code> users</li>
+</ul>
+<hr />
+<h2 id="tutorials-002-new-user-lab-instructions">Lab Instructions</h2>
+<h3 id="tutorials-002-new-user-step-1-understanding-rbac-components">Step 1: Understanding RBAC Components</h3>
+<p>RBAC stands for Role-Based Access Control. \
+It controls who can perform which actions on what resources in OpenShift.</p>
+<h4 id="tutorials-002-new-user-key-components"><strong>Key Components:</strong></h4>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Scope</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Role</strong></td>
+<td>Namespace</td>
+<td>Defines permissions within a single project</td>
+</tr>
+<tr>
+<td><strong>ClusterRole</strong></td>
+<td>Cluster-wide</td>
+<td>Defines permissions across all projects</td>
+</tr>
+<tr>
+<td><strong>RoleBinding</strong></td>
+<td>Namespace</td>
+<td>Grants Role permissions to users/groups in a project</td>
+</tr>
+<tr>
+<td><strong>ClusterRoleBinding</strong></td>
+<td>Cluster-wide</td>
+<td>Grants ClusterRole permissions to users/groups cluster-wide</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="tutorials-002-new-user-common-built-in-roles"><strong>Common Built-in Roles:</strong></h4>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Permissions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>view</code></td>
+<td>Read-only access to most resources</td>
+</tr>
+<tr>
+<td><code>edit</code></td>
+<td>Create, modify, and delete resources (not permissions)</td>
+</tr>
+<tr>
+<td><code>admin</code></td>
+<td>Full control including managing roles (within project)</td>
+</tr>
+<tr>
+<td><code>cluster-admin</code></td>
+<td>Full cluster control (all projects and cluster resources)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="tutorials-002-new-user-step-2-understanding-permission-scopes">Step 2: Understanding Permission Scopes</h3>
+<p>In OpenShift, permissions work at two levels: <strong>cluster-wide</strong> and <strong>project-specific</strong>. This is crucial to understand before exploring RBAC.</p>
+<h4 id="tutorials-002-new-user-cluster-wide-vs-project-specific">Cluster-Wide vs Project-Specific</h4>
+<ul>
+<li><strong>Cluster-wide permissions</strong>: Apply to all projects and cluster resources (nodes, cluster operators, etc.)</li>
+<li><strong>Project-specific permissions</strong>: Apply only within a single project/namespace</li>
+</ul>
+<p>A user can have different permissions at each level. For example:</p>
+<ul>
+<li>Limited cluster permissions (can&rsquo;t modify cluster settings)</li>
+<li>Full admin rights within their own projects</li>
+</ul>
+<p>Let&rsquo;s explore this with the developer user.</p>
+<h4 id="tutorials-002-new-user-check-your-current-context">Check Your Current Context</h4>
+<p>Log in as the developer user:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#tutorials-002-new-user-__codelineno-0-1"></a>oc<span class="w"> </span>login<span class="w"> </span>-u<span class="w"> </span>developer<span class="w"> </span>-p<span class="w"> </span>developer<span class="w"> </span>https://api.crc.testing:6443
+</span></code></pre></div>
+<p>Check your current user and project:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#tutorials-002-new-user-__codelineno-1-1"></a>oc<span class="w"> </span>whoami
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#tutorials-002-new-user-__codelineno-1-2"></a>oc<span class="w"> </span>project
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#tutorials-002-new-user-__codelineno-2-1"></a>developer
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#tutorials-002-new-user-__codelineno-2-2"></a>Using project &quot;lab-000-setup&quot; on server &quot;https://api.crc.testing:6443&quot;.
+</span></code></pre></div>
+<p>You&rsquo;re logged in as <code>developer</code> and currently in the <code>lab-000-setup</code> project (created in Lab 000).</p>
+<h4 id="tutorials-002-new-user-test-cluster-wide-permissions">Test Cluster-Wide Permissions</h4>
+<p>The <code>oc auth can-i</code> command checks if you have permission to perform an action. \
+Let&rsquo;s test cluster-wide permissions:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#tutorials-002-new-user-__codelineno-3-1"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>create<span class="w"> </span>pods<span class="w"> </span>--all-namespaces
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#tutorials-002-new-user-__codelineno-4-1"></a>no
+</span></code></pre></div>
+<p><strong>Why &ldquo;no&rdquo;?</strong> Creating pods across all namespaces requires cluster-level permissions. The developer user doesn&rsquo;t have this.</p>
+<p>Try more cluster-level checks:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#tutorials-002-new-user-__codelineno-5-1"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>create<span class="w"> </span>projects
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#tutorials-002-new-user-__codelineno-5-2"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>delete<span class="w"> </span>clusterroles
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#tutorials-002-new-user-__codelineno-5-3"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>get<span class="w"> </span>nodes
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#tutorials-002-new-user-__codelineno-6-1"></a>yes
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#tutorials-002-new-user-__codelineno-6-2"></a>no
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#tutorials-002-new-user-__codelineno-6-3"></a>no
+</span></code></pre></div>
+<p><strong>Analysis:</strong></p>
+<ul>
+<li>✓ Can create new projects (this is allowed for developers in CRC)</li>
+<li>✗ Cannot delete cluster roles (cluster admin only)</li>
+<li>✗ Cannot view nodes (infrastructure management)</li>
+</ul>
+<h4 id="tutorials-002-new-user-test-project-specific-permissions">Test Project-Specific Permissions</h4>
+<p>Now check permissions within your current project (lab-000-setup):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#tutorials-002-new-user-__codelineno-7-1"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>create<span class="w"> </span>pods
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#tutorials-002-new-user-__codelineno-7-2"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>create<span class="w"> </span>deployments
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#tutorials-002-new-user-__codelineno-7-3"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>delete<span class="w"> </span>pods
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#tutorials-002-new-user-__codelineno-8-1"></a>yes
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#tutorials-002-new-user-__codelineno-8-2"></a>yes
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#tutorials-002-new-user-__codelineno-8-3"></a>yes
+</span></code></pre></div>
+<p><strong>Why &ldquo;yes&rdquo;?</strong> When you created the <code>lab-000-setup</code> project in Lab 000, you automatically received the <code>admin</code> role for that project.</p>
+<p>Test permission management:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#tutorials-002-new-user-__codelineno-9-1"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>create<span class="w"> </span>rolebindings
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#tutorials-002-new-user-__codelineno-9-2"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>delete<span class="w"> </span>rolebindings
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#tutorials-002-new-user-__codelineno-10-1"></a>yes
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#tutorials-002-new-user-__codelineno-10-2"></a>yes
+</span></code></pre></div>
+<p><strong>Why does this matter?</strong> The <code>admin</code> role lets you manage permissions within your project, including granting access to other users.</p>
+<h4 id="tutorials-002-new-user-the-key-insight">The Key Insight</h4>
+<p>The same command (<code>oc auth can-i create pods</code>) returns different results depending on scope:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Result</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>oc auth can-i create pods --all-namespaces</code></td>
+<td><strong>no</strong></td>
+<td>No cluster-wide permission</td>
+</tr>
+<tr>
+<td><code>oc auth can-i create pods</code> (in your project)</td>
+<td><strong>yes</strong></td>
+<td>Admin in this specific project</td>
+</tr>
+</tbody>
+</table>
+<p>This demonstrates <strong>project isolation</strong>: you can be an admin in your own projects while having limited cluster access.</p>
+<hr />
+<h3 id="tutorials-002-new-user-step-3-create-a-test-project">Step 3: Create a Test Project</h3>
+<p>Create a new project (similar to Lab 000, but now we&rsquo;ll examine the RBAC implications):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#tutorials-002-new-user-__codelineno-11-1"></a>oc<span class="w"> </span>new-project<span class="w"> </span>rbac-demo
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#tutorials-002-new-user-__codelineno-12-1"></a>Now using project &quot;rbac-demo&quot; on server &quot;https://api.crc.testing:6443&quot;.
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#tutorials-002-new-user-__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#tutorials-002-new-user-__codelineno-12-3"></a>You can add applications to this project with the &#39;new-app&#39; command...
+</span></code></pre></div>
+<p>Check your permissions in this project:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#tutorials-002-new-user-__codelineno-13-1"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>create<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>rbac-demo
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#tutorials-002-new-user-__codelineno-13-2"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>create<span class="w"> </span>deployments<span class="w"> </span>-n<span class="w"> </span>rbac-demo
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#tutorials-002-new-user-__codelineno-13-3"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>create<span class="w"> </span>rolebindings<span class="w"> </span>-n<span class="w"> </span>rbac-demo
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#tutorials-002-new-user-__codelineno-14-1"></a>yes
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#tutorials-002-new-user-__codelineno-14-2"></a>yes
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#tutorials-002-new-user-__codelineno-14-3"></a>yes
+</span></code></pre></div>
+<p>As project creator, you automatically get <code>admin</code> role in your project.</p>
+<p>View your role binding:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#tutorials-002-new-user-__codelineno-15-1"></a>oc<span class="w"> </span>get<span class="w"> </span>rolebindings<span class="w"> </span>-n<span class="w"> </span>rbac-demo
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#tutorials-002-new-user-__codelineno-16-1"></a>NAME                    ROLE                               AGE
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#tutorials-002-new-user-__codelineno-16-2"></a>admin                   ClusterRole/admin                  1m
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#tutorials-002-new-user-__codelineno-16-3"></a>system:deployers        ClusterRole/system:deployer        1m
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#tutorials-002-new-user-__codelineno-16-4"></a>system:image-builders   ClusterRole/system:image-builder   1m
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#tutorials-002-new-user-__codelineno-16-5"></a>system:image-pullers    ClusterRole/system:image-puller    1m
+</span></code></pre></div>
+<p>Describe your admin binding:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#tutorials-002-new-user-__codelineno-17-1"></a>oc<span class="w"> </span>describe<span class="w"> </span>rolebinding<span class="w"> </span>admin<span class="w"> </span>-n<span class="w"> </span>rbac-demo
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#tutorials-002-new-user-__codelineno-18-1"></a>Name:         admin
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#tutorials-002-new-user-__codelineno-18-2"></a>Namespace:    rbac-demo
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#tutorials-002-new-user-__codelineno-18-3"></a>Labels:       &lt;none&gt;
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#tutorials-002-new-user-__codelineno-18-4"></a>Annotations:  &lt;none&gt;
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#tutorials-002-new-user-__codelineno-18-5"></a>Role:
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#tutorials-002-new-user-__codelineno-18-6"></a>  Kind:  ClusterRole
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#tutorials-002-new-user-__codelineno-18-7"></a>  Name:  admin
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#tutorials-002-new-user-__codelineno-18-8"></a>Subjects:
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#tutorials-002-new-user-__codelineno-18-9"></a>  Kind  Name       Namespace
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#tutorials-002-new-user-__codelineno-18-10"></a>  ----  ----       ---------
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#tutorials-002-new-user-__codelineno-18-11"></a>  User  developer
+</span></code></pre></div>
+<hr />
+<h3 id="tutorials-002-new-user-step-4-explore-built-in-roles">Step 4: Explore Built-in Roles</h3>
+<p>List all cluster roles:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#tutorials-002-new-user-__codelineno-19-1"></a>oc<span class="w"> </span>get<span class="w"> </span>clusterroles
+</span></code></pre></div>
+<p>This shows many built-in roles. Let&rsquo;s examine the three most common ones: <code>view</code>, <code>edit</code>, and <code>admin</code>.</p>
+<h4 id="tutorials-002-new-user-view-role-read-only">View Role - Read Only</h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#tutorials-002-new-user-__codelineno-20-1"></a>oc<span class="w"> </span>describe<span class="w"> </span>clusterrole<span class="w"> </span>view<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="s2">&quot;^PolicyRule:&quot;</span>
+</span></code></pre></div>
+<p>Expected output (partial):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#tutorials-002-new-user-__codelineno-21-1"></a>PolicyRule:
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#tutorials-002-new-user-__codelineno-21-2"></a>  Resources                                    Non-Resource URLs  Resource Names  Verbs
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#tutorials-002-new-user-__codelineno-21-3"></a>  ---------                                    -----------------  --------------  -----
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#tutorials-002-new-user-__codelineno-21-4"></a>  bindings                                     []                 []              [get list watch]
+</span></code></pre></div>
+<p>Notice the <strong>Verbs</strong>: <code>[get list watch]</code> - these are read-only operations.</p>
+<h4 id="tutorials-002-new-user-edit-role-manage-resources">Edit Role - Manage Resources</h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#tutorials-002-new-user-__codelineno-22-1"></a>oc<span class="w"> </span>describe<span class="w"> </span>clusterrole<span class="w"> </span>edit<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="s2">&quot;buildconfigs&quot;</span>
+</span></code></pre></div>
+<p>Expected output (partial):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#tutorials-002-new-user-__codelineno-23-1"></a>  buildconfigs                                 []                 []              [create delete deletecollection get list patch update watch]
+</span></code></pre></div>
+<p>Notice the <strong>Verbs</strong> now include: <code>[create delete patch update]</code> - you can modify resources.</p>
+<p>Check if <code>edit</code> can manage permissions:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#tutorials-002-new-user-__codelineno-24-1"></a>oc<span class="w"> </span>describe<span class="w"> </span>clusterrole<span class="w"> </span>edit<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>rolebindings
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#tutorials-002-new-user-__codelineno-25-1"></a>(no output - edit cannot manage rolebindings)
+</span></code></pre></div>
+<h4 id="tutorials-002-new-user-admin-role-manage-resources-and-permissions">Admin Role - Manage Resources AND Permissions</h4>
+<p>Check if <code>admin</code> can manage permissions:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#tutorials-002-new-user-__codelineno-26-1"></a>oc<span class="w"> </span>describe<span class="w"> </span>clusterrole<span class="w"> </span>admin<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>rolebindings
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#tutorials-002-new-user-__codelineno-27-1"></a>  rolebindings                                               []                 []              [create delete deletecollection get list patch update watch]
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#tutorials-002-new-user-__codelineno-27-2"></a>  roles.rbac.authorization.k8s.io                            []                 []              [create delete deletecollection get list patch update watch]
+</span></code></pre></div>
+<p>The <code>admin</code> role can manage <code>rolebindings</code> and <code>roles</code> - this is the key difference!</p>
+<h4 id="tutorials-002-new-user-summary-of-role-differences">Summary of Role Differences</h4>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Read Resources</th>
+<th>Modify Resources</th>
+<th>Manage Permissions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>view</code></td>
+<td>✓</td>
+<td>✗</td>
+<td>✗</td>
+</tr>
+<tr>
+<td><code>edit</code></td>
+<td>✓</td>
+<td>✓</td>
+<td>✗</td>
+</tr>
+<tr>
+<td><code>admin</code></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td><code>cluster-admin</code></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓ (cluster-wide)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key Insight:</strong> The progression is clear:</p>
+<ul>
+<li><code>view</code> → can only read</li>
+<li><code>edit</code> → can read and modify resources</li>
+<li><code>admin</code> → can read, modify resources, AND grant access to others</li>
+<li><code>cluster-admin</code> → can do everything, everywhere</li>
+</ul>
+<hr />
+<h3 id="tutorials-002-new-user-step-5-grant-permissions-to-another-user">Step 5: Grant Permissions to Another User</h3>
+<p>Switch to kubeadmin (cluster admin):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#tutorials-002-new-user-__codelineno-28-1"></a>oc<span class="w"> </span>login<span class="w"> </span>-u<span class="w"> </span>kubeadmin<span class="w"> </span>-p<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>~/.crc/machines/crc/kubeadmin-password<span class="k">)</span><span class="w"> </span>https://api.crc.testing:6443
+</span></code></pre></div>
+<p>Create another test project:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#tutorials-002-new-user-__codelineno-29-1"></a>oc<span class="w"> </span>new-project<span class="w"> </span>team-project
+</span></code></pre></div>
+<p>Grant developer user <code>edit</code> role in this project:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#tutorials-002-new-user-__codelineno-30-1"></a>oc<span class="w"> </span>adm<span class="w"> </span>policy<span class="w"> </span>add-role-to-user<span class="w"> </span>edit<span class="w"> </span>developer<span class="w"> </span>-n<span class="w"> </span>team-project
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#tutorials-002-new-user-__codelineno-31-1"></a>clusterrole.rbac.authorization.k8s.io/edit added: &quot;developer&quot;
+</span></code></pre></div>
+<p>View the role binding:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#tutorials-002-new-user-__codelineno-32-1"></a>oc<span class="w"> </span>get<span class="w"> </span>rolebinding<span class="w"> </span>-n<span class="w"> </span>team-project
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#tutorials-002-new-user-__codelineno-33-1"></a>NAME                    ROLE                               AGE
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#tutorials-002-new-user-__codelineno-33-2"></a>admin                   ClusterRole/admin                  14s
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#tutorials-002-new-user-__codelineno-33-3"></a>edit                    ClusterRole/edit                   7s
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#tutorials-002-new-user-__codelineno-33-4"></a>system:deployers        ClusterRole/system:deployer        14s
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#tutorials-002-new-user-__codelineno-33-5"></a>system:image-builders   ClusterRole/system:image-builder   14s
+</span><span id="__span-33-6"><a id="__codelineno-33-6" name="__codelineno-33-6" href="#tutorials-002-new-user-__codelineno-33-6"></a>system:image-pullers    ClusterRole/system:image-puller    14s
+</span></code></pre></div>
+<p>Describe the edit binding:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#tutorials-002-new-user-__codelineno-34-1"></a>oc<span class="w"> </span>describe<span class="w"> </span>rolebinding<span class="w"> </span>edit<span class="w"> </span>-n<span class="w"> </span>team-project
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#tutorials-002-new-user-__codelineno-35-1"></a>Name:         edit
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#tutorials-002-new-user-__codelineno-35-2"></a>Namespace:    team-project
+</span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#tutorials-002-new-user-__codelineno-35-3"></a>Labels:       &lt;none&gt;
+</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#tutorials-002-new-user-__codelineno-35-4"></a>Annotations:  &lt;none&gt;
+</span><span id="__span-35-5"><a id="__codelineno-35-5" name="__codelineno-35-5" href="#tutorials-002-new-user-__codelineno-35-5"></a>Role:
+</span><span id="__span-35-6"><a id="__codelineno-35-6" name="__codelineno-35-6" href="#tutorials-002-new-user-__codelineno-35-6"></a>  Kind:  ClusterRole
+</span><span id="__span-35-7"><a id="__codelineno-35-7" name="__codelineno-35-7" href="#tutorials-002-new-user-__codelineno-35-7"></a>  Name:  edit
+</span><span id="__span-35-8"><a id="__codelineno-35-8" name="__codelineno-35-8" href="#tutorials-002-new-user-__codelineno-35-8"></a>Subjects:
+</span><span id="__span-35-9"><a id="__codelineno-35-9" name="__codelineno-35-9" href="#tutorials-002-new-user-__codelineno-35-9"></a>  Kind  Name       Namespace
+</span><span id="__span-35-10"><a id="__codelineno-35-10" name="__codelineno-35-10" href="#tutorials-002-new-user-__codelineno-35-10"></a>  ----  ----       ---------
+</span><span id="__span-35-11"><a id="__codelineno-35-11" name="__codelineno-35-11" href="#tutorials-002-new-user-__codelineno-35-11"></a>  User  developer
+</span></code></pre></div>
+<hr />
+<h3 id="tutorials-002-new-user-step-6-test-permissions-as-developer">Step 6: Test Permissions as Developer</h3>
+<p>Switch back to developer user:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#tutorials-002-new-user-__codelineno-36-1"></a>oc<span class="w"> </span>login<span class="w"> </span>-u<span class="w"> </span>developer<span class="w"> </span>-p<span class="w"> </span>developer<span class="w"> </span>https://api.crc.testing:6443
+</span></code></pre></div>
+<p>List your projects:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#tutorials-002-new-user-__codelineno-37-1"></a>oc<span class="w"> </span>projects
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#tutorials-002-new-user-__codelineno-38-1"></a>You have access to the following projects and can switch between them with &#39; project &lt;projectname&gt;&#39;:
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#tutorials-002-new-user-__codelineno-38-2"></a>
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#tutorials-002-new-user-__codelineno-38-3"></a>    lab-000-setup - Getting Started with OpenShift
+</span><span id="__span-38-4"><a id="__codelineno-38-4" name="__codelineno-38-4" href="#tutorials-002-new-user-__codelineno-38-4"></a>    rbac-demo
+</span><span id="__span-38-5"><a id="__codelineno-38-5" name="__codelineno-38-5" href="#tutorials-002-new-user-__codelineno-38-5"></a>  * team-project
+</span><span id="__span-38-6"><a id="__codelineno-38-6" name="__codelineno-38-6" href="#tutorials-002-new-user-__codelineno-38-6"></a>
+</span><span id="__span-38-7"><a id="__codelineno-38-7" name="__codelineno-38-7" href="#tutorials-002-new-user-__codelineno-38-7"></a>Using project &quot;team-project&quot; on server &quot;https://api.crc.testing:6443&quot;.
+</span></code></pre></div>
+<p>Switch to team-project if not already:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#tutorials-002-new-user-__codelineno-39-1"></a>oc<span class="w"> </span>project<span class="w"> </span>team-project
+</span></code></pre></div>
+<p>Test your permissions (you have edit role):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#tutorials-002-new-user-__codelineno-40-1"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>create<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>team-project
+</span><span id="__span-40-2"><a id="__codelineno-40-2" name="__codelineno-40-2" href="#tutorials-002-new-user-__codelineno-40-2"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>delete<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>team-project
+</span><span id="__span-40-3"><a id="__codelineno-40-3" name="__codelineno-40-3" href="#tutorials-002-new-user-__codelineno-40-3"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>create<span class="w"> </span>rolebindings<span class="w"> </span>-n<span class="w"> </span>team-project
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#tutorials-002-new-user-__codelineno-41-1"></a>yes
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#tutorials-002-new-user-__codelineno-41-2"></a>yes
+</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#tutorials-002-new-user-__codelineno-41-3"></a>no
+</span></code></pre></div>
+<p>You can manage resources but cannot manage permissions (that requires admin role).</p>
+<hr />
+<h3 id="tutorials-002-new-user-step-7-understanding-role-vs-rolebinding">Step 7: Understanding Role vs RoleBinding</h3>
+<p>A <strong>Role</strong> defines what can be done. A <strong>RoleBinding</strong> assigns that role to someone.</p>
+<p>Create a custom role that only allows viewing pods:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#tutorials-002-new-user-__codelineno-42-1"></a>oc<span class="w"> </span>login<span class="w"> </span>-u<span class="w"> </span>kubeadmin<span class="w"> </span>-p<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>~/.crc/machines/crc/kubeadmin-password<span class="k">)</span><span class="w"> </span>https://api.crc.testing:6443
+</span></code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#tutorials-002-new-user-__codelineno-43-1"></a>cat<span class="w"> </span><span class="s">&lt;&lt;EOF | oc apply -f -</span>
+</span><span id="__span-43-2"><a id="__codelineno-43-2" name="__codelineno-43-2" href="#tutorials-002-new-user-__codelineno-43-2"></a><span class="s">apiVersion: rbac.authorization.k8s.io/v1</span>
+</span><span id="__span-43-3"><a id="__codelineno-43-3" name="__codelineno-43-3" href="#tutorials-002-new-user-__codelineno-43-3"></a><span class="s">kind: Role</span>
+</span><span id="__span-43-4"><a id="__codelineno-43-4" name="__codelineno-43-4" href="#tutorials-002-new-user-__codelineno-43-4"></a><span class="s">metadata:</span>
+</span><span id="__span-43-5"><a id="__codelineno-43-5" name="__codelineno-43-5" href="#tutorials-002-new-user-__codelineno-43-5"></a><span class="s">  name: pod-reader</span>
+</span><span id="__span-43-6"><a id="__codelineno-43-6" name="__codelineno-43-6" href="#tutorials-002-new-user-__codelineno-43-6"></a><span class="s">  namespace: team-project</span>
+</span><span id="__span-43-7"><a id="__codelineno-43-7" name="__codelineno-43-7" href="#tutorials-002-new-user-__codelineno-43-7"></a><span class="s">rules:</span>
+</span><span id="__span-43-8"><a id="__codelineno-43-8" name="__codelineno-43-8" href="#tutorials-002-new-user-__codelineno-43-8"></a><span class="s">- apiGroups: [&quot;&quot;]</span>
+</span><span id="__span-43-9"><a id="__codelineno-43-9" name="__codelineno-43-9" href="#tutorials-002-new-user-__codelineno-43-9"></a><span class="s">  resources: [&quot;pods&quot;]</span>
+</span><span id="__span-43-10"><a id="__codelineno-43-10" name="__codelineno-43-10" href="#tutorials-002-new-user-__codelineno-43-10"></a><span class="s">  verbs: [&quot;get&quot;, &quot;list&quot;, &quot;watch&quot;]</span>
+</span><span id="__span-43-11"><a id="__codelineno-43-11" name="__codelineno-43-11" href="#tutorials-002-new-user-__codelineno-43-11"></a><span class="s">EOF</span>
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#tutorials-002-new-user-__codelineno-44-1"></a>role.rbac.authorization.k8s.io/pod-reader created
+</span></code></pre></div>
+<p>View the role:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#tutorials-002-new-user-__codelineno-45-1"></a>oc<span class="w"> </span>describe<span class="w"> </span>role<span class="w"> </span>pod-reader<span class="w"> </span>-n<span class="w"> </span>team-project
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#tutorials-002-new-user-__codelineno-46-1"></a>Name:         pod-reader
+</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#tutorials-002-new-user-__codelineno-46-2"></a>Labels:       &lt;none&gt;
+</span><span id="__span-46-3"><a id="__codelineno-46-3" name="__codelineno-46-3" href="#tutorials-002-new-user-__codelineno-46-3"></a>Annotations:  &lt;none&gt;
+</span><span id="__span-46-4"><a id="__codelineno-46-4" name="__codelineno-46-4" href="#tutorials-002-new-user-__codelineno-46-4"></a>PolicyRule:
+</span><span id="__span-46-5"><a id="__codelineno-46-5" name="__codelineno-46-5" href="#tutorials-002-new-user-__codelineno-46-5"></a>  Resources  Non-Resource URLs  Resource Names  Verbs
+</span><span id="__span-46-6"><a id="__codelineno-46-6" name="__codelineno-46-6" href="#tutorials-002-new-user-__codelineno-46-6"></a>  ---------  -----------------  --------------  -----
+</span><span id="__span-46-7"><a id="__codelineno-46-7" name="__codelineno-46-7" href="#tutorials-002-new-user-__codelineno-46-7"></a>  pods       []                 []              [get list watch]
+</span></code></pre></div>
+<p>This role exists but isn&rsquo;t assigned to anyone yet. Create a RoleBinding:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#tutorials-002-new-user-__codelineno-47-1"></a>oc<span class="w"> </span>create<span class="w"> </span>rolebinding<span class="w"> </span>read-pods<span class="w"> </span>--role<span class="o">=</span>pod-reader<span class="w"> </span>--user<span class="o">=</span>developer<span class="w"> </span>-n<span class="w"> </span>team-project
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#tutorials-002-new-user-__codelineno-48-1"></a>rolebinding.rbac.authorization.k8s.io/read-pods created
+</span></code></pre></div>
+<p>Now developer has both <code>edit</code> role (from Step 5) and <code>pod-reader</code> role. Since <code>edit</code> already includes pod permissions, this doesn&rsquo;t change anything practical, but demonstrates the concept.</p>
+<hr />
+<h3 id="tutorials-002-new-user-step-8-visualizing-rbac-in-web-console">Step 8: Visualizing RBAC in Web Console</h3>
+<p>So far we&rsquo;ve worked with RBAC via CLI. The web console provides a visual way to understand and manage the same permissions. This is especially helpful for:</p>
+<ul>
+<li><strong>Auditing</strong>: Quickly see who has access to what</li>
+<li><strong>Troubleshooting</strong>: Identify permission issues visually</li>
+<li><strong>Team management</strong>: Easier for non-CLI users</li>
+</ul>
+<p>Let&rsquo;s explore the RBAC we configured in previous steps.</p>
+<h4 id="tutorials-002-new-user-view-role-bindings">View Role Bindings</h4>
+<ol>
+<li>
+<p>Open the web console: <code>https://console-openshift-console.apps-crc.testing</code></p>
+</li>
+<li>
+<p>Log in as <code>kubeadmin</code></p>
+</li>
+<li>
+<p>In the left sidebar, expand <strong>User Management</strong> and click <strong>RoleBindings</strong></p>
+</li>
+</ol>
+<p>You&rsquo;ll see the RoleBindings page with a table containing these columns:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Name</strong></td>
+<td>The RoleBinding resource name</td>
+</tr>
+<tr>
+<td><strong>Role ref</strong></td>
+<td>Which role is granted (with CR or R badge)</td>
+</tr>
+<tr>
+<td><strong>Subject kind</strong></td>
+<td>Type: User, Group, or ServiceAccount</td>
+</tr>
+<tr>
+<td><strong>Subject name</strong></td>
+<td>Who has the permission</td>
+</tr>
+<tr>
+<td><strong>Namespace</strong></td>
+<td>Which project this binding exists in</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>Role ref</strong> column shows:
+   - <strong>CR</strong> badge = ClusterRole (cluster-wide role definition)
+   - <strong>R</strong> badge = Role (namespace-specific role definition)</p>
+<p><img alt="alt text" src="../tutorials/002-new-user/RoleBindings.png" /></p>
+<ol>
+<li>At the top left, click the <strong>Project: All Projects</strong> dropdown and select <strong>team-project</strong></li>
+</ol>
+<p>The table filters to show only RoleBindings in the <code>team-project</code> namespace. You should see:</p>
+<ul>
+<li><strong>admin</strong> → CR <code>admin</code>, User <code>kubeadmin</code> (project creator)</li>
+<li><strong>edit</strong> → CR <code>edit</code>, User <code>developer</code> (we created this in Step 5)</li>
+<li><strong>read-pods</strong> → R <code>pod-reader</code>, User <code>developer</code> (we created this in Step 7)</li>
+<li>
+<p><strong>system:deployers</strong>, <strong>system:image-builders</strong>, etc. (system service accounts)</p>
+</li>
+<li>
+<p>Click on the <strong>edit</strong> RoleBinding (click anywhere on the row)</p>
+</li>
+</ul>
+<p>This opens the RoleBinding details page with two tabs: <strong>Details</strong> and <strong>YAML</strong>.</p>
+<p>The <strong>Details</strong> tab shows metadata:
+   - <strong>Name</strong>: edit
+   - <strong>Namespace</strong>: team-project (with NS badge)
+   - <strong>Labels</strong>: (if any)
+   - <strong>Annotations</strong>: (if any)
+   - <strong>Created at</strong>: Timestamp
+   - <strong>Owner</strong>: (if any)</p>
+<p>To see the actual role and subjects, click the <strong>YAML</strong> tab. You&rsquo;ll see the complete RoleBinding resource:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#tutorials-002-new-user-__codelineno-49-1"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RoleBinding</span>
+</span><span id="__span-49-2"><a id="__codelineno-49-2" name="__codelineno-49-2" href="#tutorials-002-new-user-__codelineno-49-2"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+</span><span id="__span-49-3"><a id="__codelineno-49-3" name="__codelineno-49-3" href="#tutorials-002-new-user-__codelineno-49-3"></a><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-49-4"><a id="__codelineno-49-4" name="__codelineno-49-4" href="#tutorials-002-new-user-__codelineno-49-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edit</span>
+</span><span id="__span-49-5"><a id="__codelineno-49-5" name="__codelineno-49-5" href="#tutorials-002-new-user-__codelineno-49-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">team-project</span>
+</span><span id="__span-49-6"><a id="__codelineno-49-6" name="__codelineno-49-6" href="#tutorials-002-new-user-__codelineno-49-6"></a><span class="w">  </span><span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</span><span id="__span-49-7"><a id="__codelineno-49-7" name="__codelineno-49-7" href="#tutorials-002-new-user-__codelineno-49-7"></a><span class="w">  </span><span class="nt">resourceVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</span><span id="__span-49-8"><a id="__codelineno-49-8" name="__codelineno-49-8" href="#tutorials-002-new-user-__codelineno-49-8"></a><span class="w">  </span><span class="nt">creationTimestamp</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2025-12-11T16:50:07Z&#39;</span>
+</span><span id="__span-49-9"><a id="__codelineno-49-9" name="__codelineno-49-9" href="#tutorials-002-new-user-__codelineno-49-9"></a><span class="nt">subjects</span><span class="p">:</span>
+</span><span id="__span-49-10"><a id="__codelineno-49-10" name="__codelineno-49-10" href="#tutorials-002-new-user-__codelineno-49-10"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">User</span>
+</span><span id="__span-49-11"><a id="__codelineno-49-11" name="__codelineno-49-11" href="#tutorials-002-new-user-__codelineno-49-11"></a><span class="w">    </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io</span>
+</span><span id="__span-49-12"><a id="__codelineno-49-12" name="__codelineno-49-12" href="#tutorials-002-new-user-__codelineno-49-12"></a><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">developer</span>
+</span><span id="__span-49-13"><a id="__codelineno-49-13" name="__codelineno-49-13" href="#tutorials-002-new-user-__codelineno-49-13"></a><span class="nt">roleRef</span><span class="p">:</span>
+</span><span id="__span-49-14"><a id="__codelineno-49-14" name="__codelineno-49-14" href="#tutorials-002-new-user-__codelineno-49-14"></a><span class="w">  </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io</span>
+</span><span id="__span-49-15"><a id="__codelineno-49-15" name="__codelineno-49-15" href="#tutorials-002-new-user-__codelineno-49-15"></a><span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterRole</span>
+</span><span id="__span-49-16"><a id="__codelineno-49-16" name="__codelineno-49-16" href="#tutorials-002-new-user-__codelineno-49-16"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">edit</span>
+</span></code></pre></div>
+<p><strong>Focus on these key sections:</strong>
+   - <strong>subjects</strong>: <code>kind: User</code>, <code>name: developer</code> - WHO gets the permission
+   - <strong>roleRef</strong>: <code>kind: ClusterRole</code>, <code>name: edit</code> - WHAT permission they get</p>
+<p>This is exactly the RoleBinding that <code>oc adm policy add-role-to-user edit developer -n team-project</code> created!</p>
+<h4 id="tutorials-002-new-user-view-roles">View Roles</h4>
+<p>Now let&rsquo;s look at the Roles themselves (not the bindings).</p>
+<ol>
+<li>In the left sidebar under <strong>User Management</strong>, click <strong>Roles</strong></li>
+</ol>
+<p>The Roles page shows namespace-scoped roles. At the top, you&rsquo;ll see a <strong>Project</strong> dropdown.</p>
+<ol>
+<li>
+<p>Select <strong>team-project</strong> from the Project dropdown</p>
+</li>
+<li>
+<p>Look for and click on <strong>pod-reader</strong> in the table</p>
+</li>
+</ol>
+<p>The Role details page opens with three tabs: <strong>Details</strong>, <strong>YAML</strong>, and <strong>RoleBindings</strong>.</p>
+<p>The <strong>Details</strong> tab shows:
+   - <strong>Role name</strong>: pod-reader
+   - <strong>Namespace</strong>: team-project
+   - <strong>Created at</strong>: Timestamp
+   - <strong>Rules</strong>: A table with three columns:</p>
+<div class="codehilite"><pre><span></span><code> | Actions | API groups | Resources |
+ |---------|------------|-----------|
+ | get, list, watch | (empty = core API) | pods |
+</code></pre></div>
+
+<p>This table shows what operations (Actions/Verbs) are allowed on which Resources. The empty API groups means the core Kubernetes API.</p>
+<p>Click the <strong>RoleBindings</strong> tab to see:
+   - <strong>read-pods</strong> - The RoleBinding that grants this role to User <code>developer</code>
+   - A <strong>Create binding</strong> button to grant this role to additional users/groups</p>
+<p>Click the <strong>YAML</strong> tab to see the complete Role definition:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#tutorials-002-new-user-__codelineno-50-1"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Role</span>
+</span><span id="__span-50-2"><a id="__codelineno-50-2" name="__codelineno-50-2" href="#tutorials-002-new-user-__codelineno-50-2"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+</span><span id="__span-50-3"><a id="__codelineno-50-3" name="__codelineno-50-3" href="#tutorials-002-new-user-__codelineno-50-3"></a><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-50-4"><a id="__codelineno-50-4" name="__codelineno-50-4" href="#tutorials-002-new-user-__codelineno-50-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pod-reader</span>
+</span><span id="__span-50-5"><a id="__codelineno-50-5" name="__codelineno-50-5" href="#tutorials-002-new-user-__codelineno-50-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">team-project</span>
+</span><span id="__span-50-6"><a id="__codelineno-50-6" name="__codelineno-50-6" href="#tutorials-002-new-user-__codelineno-50-6"></a><span class="nt">rules</span><span class="p">:</span>
+</span><span id="__span-50-7"><a id="__codelineno-50-7" name="__codelineno-50-7" href="#tutorials-002-new-user-__codelineno-50-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verbs</span><span class="p">:</span>
+</span><span id="__span-50-8"><a id="__codelineno-50-8" name="__codelineno-50-8" href="#tutorials-002-new-user-__codelineno-50-8"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">get</span>
+</span><span id="__span-50-9"><a id="__codelineno-50-9" name="__codelineno-50-9" href="#tutorials-002-new-user-__codelineno-50-9"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+</span><span id="__span-50-10"><a id="__codelineno-50-10" name="__codelineno-50-10" href="#tutorials-002-new-user-__codelineno-50-10"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">watch</span>
+</span><span id="__span-50-11"><a id="__codelineno-50-11" name="__codelineno-50-11" href="#tutorials-002-new-user-__codelineno-50-11"></a><span class="w">    </span><span class="nt">apiGroups</span><span class="p">:</span>
+</span><span id="__span-50-12"><a id="__codelineno-50-12" name="__codelineno-50-12" href="#tutorials-002-new-user-__codelineno-50-12"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;&#39;</span>
+</span><span id="__span-50-13"><a id="__codelineno-50-13" name="__codelineno-50-13" href="#tutorials-002-new-user-__codelineno-50-13"></a><span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
+</span><span id="__span-50-14"><a id="__codelineno-50-14" name="__codelineno-50-14" href="#tutorials-002-new-user-__codelineno-50-14"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pods</span>
+</span></code></pre></div>
+<p>The <code>rules</code> section defines the permissions: what <code>verbs</code> (actions) are allowed on which <code>resources</code> in which <code>apiGroups</code>.</p>
+<p><strong>Compare</strong>: Running <code>oc describe role pod-reader -n team-project</code> shows the same rules - the CLI and web console display identical RBAC data.</p>
+<h4 id="tutorials-002-new-user-why-this-matters">Why This Matters</h4>
+<p>The CLI and web console are showing the SAME RBAC data, just differently:</p>
+<table>
+<thead>
+<tr>
+<th>Information</th>
+<th>CLI Command</th>
+<th>Web Console</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Role bindings in project</td>
+<td><code>oc get rolebindings -n &lt;project&gt;</code></td>
+<td>User Management → RoleBindings (filtered)</td>
+</tr>
+<tr>
+<td>Role binding details</td>
+<td><code>oc describe rolebinding &lt;name&gt;</code></td>
+<td>Click on binding</td>
+</tr>
+<tr>
+<td>Role permissions</td>
+<td><code>oc describe role &lt;name&gt;</code></td>
+<td>User Management → Roles → Click role</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>CLI</strong>: Faster for automation, scripts, quick checks</li>
+<li><strong>Web Console</strong>: Better for exploration, training, visual learners</li>
+</ul>
+<hr />
+<h3 id="tutorials-002-new-user-step-9-revoking-permissions">Step 9: Revoking Permissions</h3>
+<p>Permissions can be revoked when users change roles or no longer need access. Let&rsquo;s remove the <code>edit</code> role from developer and observe the impact.</p>
+<p>Switch to kubeadmin and remove the edit role:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#tutorials-002-new-user-__codelineno-51-1"></a>oc<span class="w"> </span>login<span class="w"> </span>-u<span class="w"> </span>kubeadmin<span class="w"> </span>-p<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>~/.crc/machines/crc/kubeadmin-password<span class="k">)</span><span class="w"> </span>https://api.crc.testing:6443
+</span><span id="__span-51-2"><a id="__codelineno-51-2" name="__codelineno-51-2" href="#tutorials-002-new-user-__codelineno-51-2"></a>oc<span class="w"> </span>adm<span class="w"> </span>policy<span class="w"> </span>remove-role-from-user<span class="w"> </span>edit<span class="w"> </span>developer<span class="w"> </span>-n<span class="w"> </span>team-project
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#tutorials-002-new-user-__codelineno-52-1"></a>clusterrole.rbac.authorization.k8s.io/edit removed: &quot;developer&quot;
+</span></code></pre></div>
+<p>Verify it&rsquo;s gone:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#tutorials-002-new-user-__codelineno-53-1"></a>oc<span class="w"> </span>get<span class="w"> </span>rolebinding<span class="w"> </span>edit<span class="w"> </span>-n<span class="w"> </span>team-project
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-54-1"><a id="__codelineno-54-1" name="__codelineno-54-1" href="#tutorials-002-new-user-__codelineno-54-1"></a>Error from server (NotFound): rolebindings.rbac.authorization.k8s.io &quot;edit&quot; not found
+</span></code></pre></div>
+<p>Now test as developer:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-55-1"><a id="__codelineno-55-1" name="__codelineno-55-1" href="#tutorials-002-new-user-__codelineno-55-1"></a>oc<span class="w"> </span>login<span class="w"> </span>-u<span class="w"> </span>developer<span class="w"> </span>-p<span class="w"> </span>developer<span class="w"> </span>https://api.crc.testing:6443
+</span><span id="__span-55-2"><a id="__codelineno-55-2" name="__codelineno-55-2" href="#tutorials-002-new-user-__codelineno-55-2"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>create<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>team-project
+</span><span id="__span-55-3"><a id="__codelineno-55-3" name="__codelineno-55-3" href="#tutorials-002-new-user-__codelineno-55-3"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>team-project
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-56-1"><a id="__codelineno-56-1" name="__codelineno-56-1" href="#tutorials-002-new-user-__codelineno-56-1"></a>no
+</span><span id="__span-56-2"><a id="__codelineno-56-2" name="__codelineno-56-2" href="#tutorials-002-new-user-__codelineno-56-2"></a>yes
+</span></code></pre></div>
+<p><strong>Key Insight:</strong> The developer lost <code>edit</code> permissions but kept <code>pod-reader</code> permissions. Permissions are <strong>additive</strong> - when you have multiple roles, you get the union of all permissions. Removing one role only removes those specific permissions.</p>
+<p>The <code>read-pods</code> RoleBinding still exists (sign in as kubeadmin to verify):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-57-1"><a id="__codelineno-57-1" name="__codelineno-57-1" href="#tutorials-002-new-user-__codelineno-57-1"></a>oc<span class="w"> </span>login<span class="w"> </span>-u<span class="w"> </span>kubeadmin<span class="w"> </span>-p<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>~/.crc/machines/crc/kubeadmin-password<span class="k">)</span><span class="w"> </span>https://api.crc.testing:6443
+</span><span id="__span-57-2"><a id="__codelineno-57-2" name="__codelineno-57-2" href="#tutorials-002-new-user-__codelineno-57-2"></a>oc<span class="w"> </span>get<span class="w"> </span>rolebinding<span class="w"> </span>read-pods<span class="w"> </span>-n<span class="w"> </span>team-project
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-58-1"><a id="__codelineno-58-1" name="__codelineno-58-1" href="#tutorials-002-new-user-__codelineno-58-1"></a>NAME        ROLE               AGE
+</span><span id="__span-58-2"><a id="__codelineno-58-2" name="__codelineno-58-2" href="#tutorials-002-new-user-__codelineno-58-2"></a>read-pods   Role/pod-reader    15m
+</span></code></pre></div>
+<hr />
+<h3 id="tutorials-002-new-user-step-10-understanding-clusterrolebindings">Step 10: Understanding ClusterRoleBindings</h3>
+<p>ClusterRoleBindings grant permissions cluster-wide, not just in one project. They&rsquo;re used extensively for system components.</p>
+<p>View all ClusterRoleBindings that grant cluster-admin:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-59-1"><a id="__codelineno-59-1" name="__codelineno-59-1" href="#tutorials-002-new-user-__codelineno-59-1"></a>oc<span class="w"> </span>login<span class="w"> </span>-u<span class="w"> </span>kubeadmin<span class="w"> </span>-p<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>~/.crc/machines/crc/kubeadmin-password<span class="k">)</span><span class="w"> </span>https://api.crc.testing:6443
+</span><span id="__span-59-2"><a id="__codelineno-59-2" name="__codelineno-59-2" href="#tutorials-002-new-user-__codelineno-59-2"></a>oc<span class="w"> </span>get<span class="w"> </span>clusterrolebindings<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>cluster-admin
+</span></code></pre></div>
+<p>Expected output (many results):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-60-1"><a id="__codelineno-60-1" name="__codelineno-60-1" href="#tutorials-002-new-user-__codelineno-60-1"></a>cluster-admin                                                               ClusterRole/cluster-admin       99d
+</span><span id="__span-60-2"><a id="__codelineno-60-2" name="__codelineno-60-2" href="#tutorials-002-new-user-__codelineno-60-2"></a>cluster-admins                                                              ClusterRole/cluster-admin       99d
+</span><span id="__span-60-3"><a id="__codelineno-60-3" name="__codelineno-60-3" href="#tutorials-002-new-user-__codelineno-60-3"></a>kubeadmin                                                                   ClusterRole/cluster-admin       98d
+</span><span id="__span-60-4"><a id="__codelineno-60-4" name="__codelineno-60-4" href="#tutorials-002-new-user-__codelineno-60-4"></a>system:openshift:oauth-apiserver                                            ClusterRole/cluster-admin       99d
+</span><span id="__span-60-5"><a id="__codelineno-60-5" name="__codelineno-60-5" href="#tutorials-002-new-user-__codelineno-60-5"></a>system:openshift:operator:etcd-operator                                     ClusterRole/cluster-admin       99d
+</span><span id="__span-60-6"><a id="__codelineno-60-6" name="__codelineno-60-6" href="#tutorials-002-new-user-__codelineno-60-6"></a>...
+</span><span id="__span-60-7"><a id="__codelineno-60-7" name="__codelineno-60-7" href="#tutorials-002-new-user-__codelineno-60-7"></a>(many more - system operators need cluster-admin)
+</span></code></pre></div>
+<p>Many system components need cluster-admin permissions to manage the cluster. Let&rsquo;s examine the main one:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-61-1"><a id="__codelineno-61-1" name="__codelineno-61-1" href="#tutorials-002-new-user-__codelineno-61-1"></a>oc<span class="w"> </span>describe<span class="w"> </span>clusterrolebinding<span class="w"> </span>cluster-admin
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-62-1"><a id="__codelineno-62-1" name="__codelineno-62-1" href="#tutorials-002-new-user-__codelineno-62-1"></a>Name:         cluster-admin
+</span><span id="__span-62-2"><a id="__codelineno-62-2" name="__codelineno-62-2" href="#tutorials-002-new-user-__codelineno-62-2"></a>Labels:       kubernetes.io/bootstrapping=rbac-defaults
+</span><span id="__span-62-3"><a id="__codelineno-62-3" name="__codelineno-62-3" href="#tutorials-002-new-user-__codelineno-62-3"></a>Annotations:  rbac.authorization.kubernetes.io/autoupdate: true
+</span><span id="__span-62-4"><a id="__codelineno-62-4" name="__codelineno-62-4" href="#tutorials-002-new-user-__codelineno-62-4"></a>Role:
+</span><span id="__span-62-5"><a id="__codelineno-62-5" name="__codelineno-62-5" href="#tutorials-002-new-user-__codelineno-62-5"></a>  Kind:  ClusterRole
+</span><span id="__span-62-6"><a id="__codelineno-62-6" name="__codelineno-62-6" href="#tutorials-002-new-user-__codelineno-62-6"></a>  Name:  cluster-admin
+</span><span id="__span-62-7"><a id="__codelineno-62-7" name="__codelineno-62-7" href="#tutorials-002-new-user-__codelineno-62-7"></a>Subjects:
+</span><span id="__span-62-8"><a id="__codelineno-62-8" name="__codelineno-62-8" href="#tutorials-002-new-user-__codelineno-62-8"></a>  Kind   Name            Namespace
+</span><span id="__span-62-9"><a id="__codelineno-62-9" name="__codelineno-62-9" href="#tutorials-002-new-user-__codelineno-62-9"></a>  ----   ----            ---------
+</span><span id="__span-62-10"><a id="__codelineno-62-10" name="__codelineno-62-10" href="#tutorials-002-new-user-__codelineno-62-10"></a>  Group  system:masters
+</span></code></pre></div>
+<p><strong>What this means:</strong></p>
+<ul>
+<li>The <code>cluster-admin</code> ClusterRoleBinding grants the <code>cluster-admin</code> ClusterRole to the <code>system:masters</code> group</li>
+<li>This applies to ALL namespaces (cluster-wide)</li>
+<li>The <code>kubeadmin</code> user is a member of <code>system:masters</code> which is why it has full cluster access</li>
+</ul>
+<hr />
+<h2 id="tutorials-002-new-user-understanding-rbac-best-practices">Understanding RBAC Best Practices</h2>
+<h3 id="tutorials-002-new-user-principle-of-least-privilege">Principle of Least Privilege</h3>
+<p>Grant users the minimum permissions needed:</p>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Recommended Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>View application status</td>
+<td><code>view</code></td>
+</tr>
+<tr>
+<td>Deploy and manage apps</td>
+<td><code>edit</code></td>
+</tr>
+<tr>
+<td>Manage project and users</td>
+<td><code>admin</code></td>
+</tr>
+<tr>
+<td>Cluster administration</td>
+<td><code>cluster-admin</code> (use sparingly)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tutorials-002-new-user-project-level-vs-cluster-level">Project-Level vs Cluster-Level</h3>
+<ul>
+<li>Use <strong>RoleBindings</strong> for project-specific access</li>
+<li>Use <strong>ClusterRoleBindings</strong> only when cluster-wide access is required</li>
+</ul>
+<h3 id="tutorials-002-new-user-custom-roles">Custom Roles</h3>
+<p>Create custom roles for specific needs:</p>
+<ul>
+<li>More granular control than built-in roles</li>
+<li>Can restrict to specific resource types</li>
+<li>Should be documented and reviewed regularly</li>
+</ul>
+<hr />
+<h2 id="tutorials-002-new-user-troubleshooting">Troubleshooting</h2>
+<h3 id="tutorials-002-new-user-permission-denied-errors">Permission Denied Errors</h3>
+<p>Check your current permissions:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-63-1"><a id="__codelineno-63-1" name="__codelineno-63-1" href="#tutorials-002-new-user-__codelineno-63-1"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>&lt;verb&gt;<span class="w"> </span>&lt;resource&gt;<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;
+</span></code></pre></div>
+<p>View your role bindings:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-64-1"><a id="__codelineno-64-1" name="__codelineno-64-1" href="#tutorials-002-new-user-__codelineno-64-1"></a>oc<span class="w"> </span>get<span class="w"> </span>rolebindings<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;
+</span><span id="__span-64-2"><a id="__codelineno-64-2" name="__codelineno-64-2" href="#tutorials-002-new-user-__codelineno-64-2"></a>oc<span class="w"> </span>describe<span class="w"> </span>rolebinding<span class="w"> </span>&lt;name&gt;<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;
+</span></code></pre></div>
+<h3 id="tutorials-002-new-user-cannot-view-projects">Cannot View Projects</h3>
+<p>If you don&rsquo;t see a project:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-65-1"><a id="__codelineno-65-1" name="__codelineno-65-1" href="#tutorials-002-new-user-__codelineno-65-1"></a>oc<span class="w"> </span>projects
+</span></code></pre></div>
+<p>You may lack permissions. Check as an admin.</p>
+<h3 id="tutorials-002-new-user-role-binding-not-working">Role Binding Not Working</h3>
+<p>Verify the role binding exists:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-66-1"><a id="__codelineno-66-1" name="__codelineno-66-1" href="#tutorials-002-new-user-__codelineno-66-1"></a>oc<span class="w"> </span>get<span class="w"> </span>rolebinding<span class="w"> </span>&lt;name&gt;<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>-o<span class="w"> </span>yaml
+</span></code></pre></div>
+<p>Check:</p>
+<ul>
+<li>Correct namespace</li>
+<li>Correct user/group name in subjects</li>
+<li>Correct role reference</li>
+</ul>
+<hr />
+<h2 id="tutorials-002-new-user-quick-reference">Quick Reference</h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-67-1"><a id="__codelineno-67-1" name="__codelineno-67-1" href="#tutorials-002-new-user-__codelineno-67-1"></a><span class="c1"># Check permissions</span>
+</span><span id="__span-67-2"><a id="__codelineno-67-2" name="__codelineno-67-2" href="#tutorials-002-new-user-__codelineno-67-2"></a>oc<span class="w"> </span>whoami<span class="w">                                           </span><span class="c1"># Current user</span>
+</span><span id="__span-67-3"><a id="__codelineno-67-3" name="__codelineno-67-3" href="#tutorials-002-new-user-__codelineno-67-3"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>&lt;verb&gt;<span class="w"> </span>&lt;resource&gt;<span class="w">                     </span><span class="c1"># Check if you can do something</span>
+</span><span id="__span-67-4"><a id="__codelineno-67-4" name="__codelineno-67-4" href="#tutorials-002-new-user-__codelineno-67-4"></a>oc<span class="w"> </span>auth<span class="w"> </span>can-i<span class="w"> </span>create<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w">            </span><span class="c1"># Check in specific namespace</span>
+</span><span id="__span-67-5"><a id="__codelineno-67-5" name="__codelineno-67-5" href="#tutorials-002-new-user-__codelineno-67-5"></a>
+</span><span id="__span-67-6"><a id="__codelineno-67-6" name="__codelineno-67-6" href="#tutorials-002-new-user-__codelineno-67-6"></a><span class="c1"># View roles</span>
+</span><span id="__span-67-7"><a id="__codelineno-67-7" name="__codelineno-67-7" href="#tutorials-002-new-user-__codelineno-67-7"></a>oc<span class="w"> </span>get<span class="w"> </span>roles<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w">                         </span><span class="c1"># Namespace roles</span>
+</span><span id="__span-67-8"><a id="__codelineno-67-8" name="__codelineno-67-8" href="#tutorials-002-new-user-__codelineno-67-8"></a>oc<span class="w"> </span>get<span class="w"> </span>clusterroles<span class="w">                                 </span><span class="c1"># Cluster roles</span>
+</span><span id="__span-67-9"><a id="__codelineno-67-9" name="__codelineno-67-9" href="#tutorials-002-new-user-__codelineno-67-9"></a>oc<span class="w"> </span>describe<span class="w"> </span>clusterrole<span class="w"> </span>&lt;name&gt;<span class="w">                      </span><span class="c1"># Role details</span>
+</span><span id="__span-67-10"><a id="__codelineno-67-10" name="__codelineno-67-10" href="#tutorials-002-new-user-__codelineno-67-10"></a>
+</span><span id="__span-67-11"><a id="__codelineno-67-11" name="__codelineno-67-11" href="#tutorials-002-new-user-__codelineno-67-11"></a><span class="c1"># View role bindings</span>
+</span><span id="__span-67-12"><a id="__codelineno-67-12" name="__codelineno-67-12" href="#tutorials-002-new-user-__codelineno-67-12"></a>oc<span class="w"> </span>get<span class="w"> </span>rolebindings<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w">                  </span><span class="c1"># Namespace bindings</span>
+</span><span id="__span-67-13"><a id="__codelineno-67-13" name="__codelineno-67-13" href="#tutorials-002-new-user-__codelineno-67-13"></a>oc<span class="w"> </span>get<span class="w"> </span>clusterrolebindings<span class="w">                          </span><span class="c1"># Cluster bindings</span>
+</span><span id="__span-67-14"><a id="__codelineno-67-14" name="__codelineno-67-14" href="#tutorials-002-new-user-__codelineno-67-14"></a>oc<span class="w"> </span>describe<span class="w"> </span>rolebinding<span class="w"> </span>&lt;name&gt;<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w">       </span><span class="c1"># Binding details</span>
+</span><span id="__span-67-15"><a id="__codelineno-67-15" name="__codelineno-67-15" href="#tutorials-002-new-user-__codelineno-67-15"></a>
+</span><span id="__span-67-16"><a id="__codelineno-67-16" name="__codelineno-67-16" href="#tutorials-002-new-user-__codelineno-67-16"></a><span class="c1"># Grant permissions</span>
+</span><span id="__span-67-17"><a id="__codelineno-67-17" name="__codelineno-67-17" href="#tutorials-002-new-user-__codelineno-67-17"></a>oc<span class="w"> </span>adm<span class="w"> </span>policy<span class="w"> </span>add-role-to-user<span class="w"> </span>&lt;role&gt;<span class="w"> </span>&lt;user&gt;<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;
+</span><span id="__span-67-18"><a id="__codelineno-67-18" name="__codelineno-67-18" href="#tutorials-002-new-user-__codelineno-67-18"></a>oc<span class="w"> </span>adm<span class="w"> </span>policy<span class="w"> </span>add-cluster-role-to-user<span class="w"> </span>&lt;role&gt;<span class="w"> </span>&lt;user&gt;
+</span><span id="__span-67-19"><a id="__codelineno-67-19" name="__codelineno-67-19" href="#tutorials-002-new-user-__codelineno-67-19"></a>
+</span><span id="__span-67-20"><a id="__codelineno-67-20" name="__codelineno-67-20" href="#tutorials-002-new-user-__codelineno-67-20"></a><span class="c1"># Remove permissions</span>
+</span><span id="__span-67-21"><a id="__codelineno-67-21" name="__codelineno-67-21" href="#tutorials-002-new-user-__codelineno-67-21"></a>oc<span class="w"> </span>adm<span class="w"> </span>policy<span class="w"> </span>remove-role-from-user<span class="w"> </span>&lt;role&gt;<span class="w"> </span>&lt;user&gt;<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;
+</span><span id="__span-67-22"><a id="__codelineno-67-22" name="__codelineno-67-22" href="#tutorials-002-new-user-__codelineno-67-22"></a>oc<span class="w"> </span>adm<span class="w"> </span>policy<span class="w"> </span>remove-cluster-role-from-user<span class="w"> </span>&lt;role&gt;<span class="w"> </span>&lt;user&gt;
+</span><span id="__span-67-23"><a id="__codelineno-67-23" name="__codelineno-67-23" href="#tutorials-002-new-user-__codelineno-67-23"></a>
+</span><span id="__span-67-24"><a id="__codelineno-67-24" name="__codelineno-67-24" href="#tutorials-002-new-user-__codelineno-67-24"></a><span class="c1"># Projects</span>
+</span><span id="__span-67-25"><a id="__codelineno-67-25" name="__codelineno-67-25" href="#tutorials-002-new-user-__codelineno-67-25"></a>oc<span class="w"> </span>projects<span class="w">                                         </span><span class="c1"># List accessible projects</span>
+</span><span id="__span-67-26"><a id="__codelineno-67-26" name="__codelineno-67-26" href="#tutorials-002-new-user-__codelineno-67-26"></a>oc<span class="w"> </span>project<span class="w"> </span>&lt;name&gt;<span class="w">                                   </span><span class="c1"># Switch project</span>
+</span></code></pre></div>
+<hr />
+<h2 id="tutorials-002-new-user-cleanup">Cleanup</h2>
+<p>Remove the test projects:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-68-1"><a id="__codelineno-68-1" name="__codelineno-68-1" href="#tutorials-002-new-user-__codelineno-68-1"></a>oc<span class="w"> </span>login<span class="w"> </span>-u<span class="w"> </span>kubeadmin<span class="w"> </span>-p<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>~/.crc/machines/crc/kubeadmin-password<span class="k">)</span><span class="w"> </span>https://api.crc.testing:6443
+</span><span id="__span-68-2"><a id="__codelineno-68-2" name="__codelineno-68-2" href="#tutorials-002-new-user-__codelineno-68-2"></a>oc<span class="w"> </span>delete<span class="w"> </span>project<span class="w"> </span>rbac-demo
+</span><span id="__span-68-3"><a id="__codelineno-68-3" name="__codelineno-68-3" href="#tutorials-002-new-user-__codelineno-68-3"></a>oc<span class="w"> </span>delete<span class="w"> </span>project<span class="w"> </span>team-project
+</span></code></pre></div>
+<hr />
+<h2 id="tutorials-002-new-user-next-steps">Next Steps</h2>
+<p>Continue to <a href="#tutorials-003-new-project">Lab 003: Create New Project</a> to learn about project configuration and resource quotas.</p></section><section class="print-page" id="tutorials-003-new-project" heading-number="2.4"><h1 id="tutorials-003-new-project-lab-003-creating-your-first-openshift-project">Lab 003: Creating Your First OpenShift Project</h1>
 <h2 id="tutorials-003-new-project-overview">Overview</h2>
 <p>In OpenShift, a <strong>project</strong> is a Kubernetes namespace with additional security and management features. If you&rsquo;re familiar with Kubernetes namespaces, think of projects as namespaces plus RBAC (Role Based Access Control) policies, network isolation, and resource tracking. This lab introduces you to creating and managing projects in OpenShift.</p>
 <h2 id="tutorials-003-new-project-learning-objectives">Learning Objectives</h2>
