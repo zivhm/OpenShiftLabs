@@ -583,21 +583,287 @@
                     <section class='print-page md-section' id='section-2' heading-number='2'>
                         <h1>Tutorials<a class='headerlink' href='#section-2' title='Permanent link'></a>
                         </h1>
-                    <section class="print-page" id="tutorials-000-setup" heading-number="2.1"><h1 id="tutorials-000-setup-000-setup-accessing-openshift-web-console">000-Setup — Accessing OpenShift web console</h1>
-<p>This module covers accessing the OpenShift web console and verifying cluster connectivity.</p>
-<h2 id="tutorials-000-setup-objectives">Objectives</h2>
+                    <section class="print-page" id="tutorials-000-setup" heading-number="2.1"><h1 id="tutorials-000-setup-lab-000-installation-and-initial-setup">Lab 000: Installation and Initial Setup</h1>
+<h2 id="tutorials-000-setup-overview">Overview</h2>
+<p>This lab guides you through setting up OpenShift Local (CRC), installing the <code>oc</code> CLI tool, and creating your first project. \
+We&rsquo;ll learn how to use both the web console and command-line interface.</p>
+<h2 id="tutorials-000-setup-learning-objectives">Learning Objectives</h2>
 <ul>
-<li>Access the OpenShift web console.</li>
-<li>Navigate the console and verify cluster access.</li>
-<li>Create your first project.</li>
+<li>Install and start OpenShift Local (CRC)</li>
+<li>Install the <code>oc</code> CLI tool</li>
+<li>Access the web console</li>
+<li>Create your first project</li>
 </ul>
-<h2 id="tutorials-000-setup-tasks">Tasks</h2>
+<h2 id="tutorials-000-setup-prerequisites">Prerequisites</h2>
+<p><strong>System Requirements:</strong></p>
+<ul>
+<li><strong>Operating System</strong>: Linux</li>
+<li><strong>RAM</strong>: Minimum 9 GB RAM (16 GB recommended)</li>
+<li><strong>CPU</strong>: 4 virtual CPUs minimum</li>
+<li><strong>Disk Space</strong>: 35 GB of free disk space</li>
+<li><strong>Virtualization</strong>: Hardware virtualization enabled in BIOS with KVM support</li>
+</ul>
+<p><strong>Software Prerequisites:</strong></p>
+<ul>
+<li>Administrator/root access on your machine</li>
+<li>A Red Hat account (free to create at https://www.redhat.com)</li>
+<li>Internet connection for downloads</li>
+<li>Web browser (Chrome or Firefox)</li>
+</ul>
+<hr />
+<h2 id="tutorials-000-setup-lab-instructions">Lab Instructions</h2>
+<h3 id="tutorials-000-setup-step-1-install-openshift-local-crc-and-get-pull-secret">Step 1: Install OpenShift Local (CRC) And Get Pull Secret</h3>
 <ol>
-<li>Access the OpenShift web console and log in.</li>
-<li>Verify cluster access by viewing nodes in the web console (Administrator view → Compute → Nodes).</li>
-<li>Create a practice project using the web console (Developer view → Project dropdown → Create Project).</li>
+<li>Create a free Red Hat account at https://www.redhat.com</li>
+<li>Visit https://console.redhat.com/openshift/create/local</li>
+<li>
+<p>Download your pull secret (JSON file) - you&rsquo;ll need this during setup</p>
+</li>
+<li>
+<p>Download Linux version of OpenShift Local (CRC) from the same page</p>
+</li>
+<li>
+<p>Extract and install:</p>
+</li>
 </ol>
-<p>Estimated time: 30–45 minutes</p></section><section class="print-page" id="tutorials-001-verify-cluster" heading-number="2.2"><h1 id="tutorials-001-verify-cluster-001-verify-cluster-verifying-openshift-cluster-health">001-Verify-Cluster — Verifying OpenShift Cluster Health</h1>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#tutorials-000-setup-__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>~/Downloads<span class="w">                    </span><span class="c1"># Navigate to Downloads</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#tutorials-000-setup-__codelineno-0-2"></a>tar<span class="w"> </span>-xvf<span class="w"> </span>crc-linux-*.tar.xz<span class="w">       </span><span class="c1"># Extract the tarball</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#tutorials-000-setup-__codelineno-0-3"></a><span class="nb">cd</span><span class="w"> </span>crc-linux-*-amd64<span class="w">              </span><span class="c1"># Change to extracted directory</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#tutorials-000-setup-__codelineno-0-4"></a>sudo<span class="w"> </span>cp<span class="w"> </span>crc<span class="w"> </span>/usr/local/bin/<span class="w">       </span><span class="c1"># Copy crc binary to /usr/local/bin</span>
+</span></code></pre></div>
+<ol>
+<li>Verify installation:</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#tutorials-000-setup-__codelineno-1-1"></a>crc<span class="w"> </span>version
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#tutorials-000-setup-__codelineno-2-1"></a>CRC version: 2.x.x+&lt;commit&gt;
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#tutorials-000-setup-__codelineno-2-2"></a>OpenShift version: 4.x.x
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#tutorials-000-setup-__codelineno-2-3"></a>Podman version: 4.x.x
+</span></code></pre></div>
+<ol>
+<li>Run setup:</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#tutorials-000-setup-__codelineno-3-1"></a>crc<span class="w"> </span>setup
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#tutorials-000-setup-__codelineno-4-1"></a>Your system is correctly setup for using CRC. Use &#39;crc start&#39; to start the instance
+</span></code></pre></div>
+<hr />
+<h3 id="tutorials-000-setup-step-3-start-openshift-local">Step 3: Start OpenShift Local</h3>
+<ol>
+<li>Start CRC (takes 10-15 minutes on first run):</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#tutorials-000-setup-__codelineno-5-1"></a>crc<span class="w"> </span>start<span class="w"> </span>--pull-secret-file<span class="w"> </span>~/Downloads/pull-secret.txt
+</span></code></pre></div>
+<blockquote>
+<p>Note: To allocate more resources (recommended 12 GB RAM, 6 CPUs), \
+   use: -crc config set memory 12288 &amp;&amp; crc config set cpus 6</p>
+</blockquote>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#tutorials-000-setup-__codelineno-6-1"></a>   INFO All operators are available. Ensuring stability... 
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#tutorials-000-setup-__codelineno-6-2"></a>   INFO Operators are stable (2/3)...                
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#tutorials-000-setup-__codelineno-6-3"></a>   INFO Operators are stable (3/3)...                
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#tutorials-000-setup-__codelineno-6-4"></a>   INFO Adding crc-admin and crc-developer contexts to kubeconfig... 
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#tutorials-000-setup-__codelineno-6-5"></a>   Started the OpenShift cluster.
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#tutorials-000-setup-__codelineno-6-6"></a>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#tutorials-000-setup-__codelineno-6-7"></a>   The server is accessible via web console at:
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#tutorials-000-setup-__codelineno-6-8"></a>   https://console-openshift-console.apps-crc.testing
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#tutorials-000-setup-__codelineno-6-9"></a>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#tutorials-000-setup-__codelineno-6-10"></a>   Log in as administrator:
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#tutorials-000-setup-__codelineno-6-11"></a>   Username: kubeadmin
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#tutorials-000-setup-__codelineno-6-12"></a>   Password: 9eXcY-tIBcC-2UsDp-NPW5H  # save this password!
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#tutorials-000-setup-__codelineno-6-13"></a>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#tutorials-000-setup-__codelineno-6-14"></a>   Log in as user:
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#tutorials-000-setup-__codelineno-6-15"></a>   Username: developer
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#tutorials-000-setup-__codelineno-6-16"></a>   Password: developer
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#tutorials-000-setup-__codelineno-6-17"></a>
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#tutorials-000-setup-__codelineno-6-18"></a>   Use the &#39;oc&#39; command line interface:
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#tutorials-000-setup-__codelineno-6-19"></a>   $ eval $(crc oc-env)
+</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#tutorials-000-setup-__codelineno-6-20"></a>   $ oc login -u developer https://api.crc.testing:6443
+</span></code></pre></div>
+<ol>
+<li>Save the credentials from the output:</li>
+<li><strong>Web console</strong>: <code>https://console-openshift-console.apps-crc.testing</code></li>
+<li><strong>Admin</strong>: username <code>kubeadmin</code>, password shown in output</li>
+<li>
+<p><strong>Developer</strong>: username <code>developer</code>, password <code>developer</code></p>
+</li>
+<li>
+<p>Verify it&rsquo;s running:</p>
+</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#tutorials-000-setup-__codelineno-7-1"></a>crc<span class="w"> </span>status
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#tutorials-000-setup-__codelineno-8-1"></a>CRC VM:          Running
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#tutorials-000-setup-__codelineno-8-2"></a>OpenShift:       Running (v4.x.x)
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#tutorials-000-setup-__codelineno-8-3"></a>Podman:          Running
+</span></code></pre></div>
+<hr />
+<h3 id="tutorials-000-setup-step-4-install-the-oc-cli-tool">Step 4: Install the oc CLI Tool</h3>
+<p>Add CRC&rsquo;s <code>oc</code> to your PATH:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#tutorials-000-setup-__codelineno-9-1"></a><span class="nb">eval</span><span class="w"> </span><span class="k">$(</span>crc<span class="w"> </span>oc-env<span class="k">)</span><span class="w">                      </span><span class="c1"># Add to current session</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#tutorials-000-setup-__codelineno-9-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;eval $(crc oc-env)&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc<span class="w">  </span><span class="c1"># Persist for future sessions</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#tutorials-000-setup-__codelineno-9-3"></a><span class="nb">source</span><span class="w"> </span>~/.bashrc<span class="w">                        </span><span class="c1"># Reload bashrc</span>
+</span></code></pre></div>
+<p>Verify:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#tutorials-000-setup-__codelineno-10-1"></a>oc<span class="w"> </span>version
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#tutorials-000-setup-__codelineno-11-1"></a>   crc status
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#tutorials-000-setup-__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#tutorials-000-setup-__codelineno-11-3"></a>   CRC VM:          Running
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#tutorials-000-setup-__codelineno-11-4"></a>   OpenShift:       Running (v4.19.8)
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#tutorials-000-setup-__codelineno-11-5"></a>   RAM Usage:       6.965GB of 16.76GB
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#tutorials-000-setup-__codelineno-11-6"></a>   Disk Usage:      29.57GB of 106.8GB (Inside the CRC VM)
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#tutorials-000-setup-__codelineno-11-7"></a>   Cache Usage:     30.09GB
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#tutorials-000-setup-__codelineno-11-8"></a>   Cache Directory: /home/user/.crc/cache
+</span></code></pre></div>
+<hr />
+<h3 id="tutorials-000-setup-step-5-log-in-to-openshift-via-cli">Step 5: Log in to OpenShift via CLI</h3>
+<p>Log in as developer:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#tutorials-000-setup-__codelineno-12-1"></a>oc<span class="w"> </span>login<span class="w"> </span>-u<span class="w"> </span>developer<span class="w"> </span>-p<span class="w"> </span>developer<span class="w"> </span>https://api.crc.testing:6443
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#tutorials-000-setup-__codelineno-13-1"></a>Login successful.
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#tutorials-000-setup-__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#tutorials-000-setup-__codelineno-13-3"></a>You don&#39;t have any projects. You can try to create a new project, by running
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#tutorials-000-setup-__codelineno-13-4"></a>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#tutorials-000-setup-__codelineno-13-5"></a>    oc new-project &lt;projectname&gt;
+</span></code></pre></div>
+<p>Verify your login:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#tutorials-000-setup-__codelineno-14-1"></a>oc<span class="w"> </span>whoami
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#tutorials-000-setup-__codelineno-14-2"></a>oc<span class="w"> </span>get<span class="w"> </span>nodes
+</span></code></pre></div>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#tutorials-000-setup-__codelineno-15-1"></a>developer
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#tutorials-000-setup-__codelineno-15-2"></a>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#tutorials-000-setup-__codelineno-15-3"></a>NAME                 STATUS   ROLES                         AGE   VERSION
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#tutorials-000-setup-__codelineno-15-4"></a>crc                  Ready    control-plane,master,worker   10m   v1.xx.x
+</span></code></pre></div>
+<hr />
+<h3 id="tutorials-000-setup-step-6-access-the-web-console">Step 6: Access the Web Console</h3>
+<ol>
+<li>Open your browser and navigate to: <code>https://console-openshift-console.apps-crc.testing</code></li>
+<li>Accept the SSL certificate warning (safe for local development)</li>
+<li>Log in as <code>developer</code> / <code>developer</code></li>
+<li>You&rsquo;ll see the OpenShift console with two perspectives:</li>
+<li><strong>Developer</strong>: Application-focused view (default for developers)</li>
+<li><strong>Administrator</strong>: Infrastructure and cluster management</li>
+</ol>
+<p><img alt="alt text" src="../tutorials/000-setup/overview.png" /></p>
+<hr />
+<h3 id="tutorials-000-setup-step-7-create-your-first-project">Step 7: Create Your First Project</h3>
+<p>In Developer perspective:</p>
+<ol>
+<li>Click <strong>Home</strong> → <strong>Projects</strong> → <strong>Create Project</strong></li>
+</ol>
+<p><img alt="alt text" src="../tutorials/000-setup/create-project.png" /></p>
+<ol>
+<li>Fill in the details:</li>
+<li><strong>Name</strong>: <code>lab-000-setup</code></li>
+<li>
+<p><strong>Display name</strong>: <code>Getting Started with OpenShift</code> (optional)</p>
+</li>
+<li>
+<p>Click <strong>Create</strong></p>
+</li>
+</ol>
+<p>You&rsquo;ll see now be in your new project context.</p>
+<hr />
+<h3 id="tutorials-000-setup-step-8-project-details">Step 8: Project Details</h3>
+<h4 id="tutorials-000-setup-understanding-project-tabs">Understanding Project Tabs</h4>
+<p>Once your project is created, you&rsquo;ll see several tabs:</p>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Overview</strong></td>
+<td>Dashboard showing project status, recent activity, and alerts</td>
+</tr>
+<tr>
+<td><strong>Details</strong></td>
+<td>Project metadata: name, labels, annotations, requester</td>
+</tr>
+<tr>
+<td><strong>YAML</strong></td>
+<td>Raw YAML definition of the project resource (editable)</td>
+</tr>
+<tr>
+<td><strong>Workloads</strong></td>
+<td>Lists all workloads (Pods, Deployments, etc.) in this project</td>
+</tr>
+<tr>
+<td><strong>RoleBindings</strong></td>
+<td>Manage who has access to this project and with what permissions</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="alt text" src="../tutorials/000-setup/project-details.png" /></p>
+<blockquote>
+<p>Note: The Overview tab is your go-to for quick health checks. Use RoleBindings when you need to share project access with teammates.</p>
+</blockquote>
+<hr />
+<h2 id="tutorials-000-setup-managing-openshift-local-crc">Managing OpenShift Local (CRC)</h2>
+<p>Useful commands:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#tutorials-000-setup-__codelineno-16-1"></a>crc<span class="w"> </span>stop<span class="w">                    </span><span class="c1"># Stop the cluster</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#tutorials-000-setup-__codelineno-16-2"></a>crc<span class="w"> </span>start<span class="w">                   </span><span class="c1"># Start the cluster</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#tutorials-000-setup-__codelineno-16-3"></a>crc<span class="w"> </span>status<span class="w">                  </span><span class="c1"># Check cluster status</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#tutorials-000-setup-__codelineno-16-4"></a>crc<span class="w"> </span>delete<span class="w">                  </span><span class="c1"># Delete the cluster (removes all data)</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#tutorials-000-setup-__codelineno-16-5"></a>crc<span class="w"> </span>console<span class="w"> </span>--credentials<span class="w">   </span><span class="c1"># View login credentials</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#tutorials-000-setup-__codelineno-16-6"></a>crc<span class="w"> </span>console<span class="w">                 </span><span class="c1"># Open console in browser</span>
+</span></code></pre></div>
+<hr />
+<h2 id="tutorials-000-setup-troubleshooting">Troubleshooting</h2>
+<p><strong>Virtualization errors during setup:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#tutorials-000-setup-__codelineno-17-1"></a><span class="c1"># Install KVM (Ubuntu/Debian)</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#tutorials-000-setup-__codelineno-17-2"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>qemu-kvm<span class="w"> </span>libvirt-daemon<span class="w"> </span>libvirt-daemon-system
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#tutorials-000-setup-__codelineno-17-3"></a>sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>libvirt<span class="w"> </span><span class="nv">$USER</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#tutorials-000-setup-__codelineno-17-4"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>libvirtd
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#tutorials-000-setup-__codelineno-17-5"></a><span class="c1"># Log out and back in</span>
+</span></code></pre></div>
+<p><strong>Can&rsquo;t access web console:</strong></p>
+<ul>
+<li>Verify CRC is running: <code>crc status</code></li>
+<li>Check <code>/etc/hosts</code> has CRC entries: <code>cat /etc/hosts | grep crc.testing</code></li>
+<li>Accept SSL certificate warning in browser</li>
+</ul>
+<p><strong>oc command not found:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#tutorials-000-setup-__codelineno-18-1"></a><span class="nb">eval</span><span class="w"> </span><span class="k">$(</span>crc<span class="w"> </span>oc-env<span class="k">)</span>
+</span></code></pre></div>
+<p><strong>Performance issues:</strong></p>
+<ul>
+<li>Ensure 9GB+ RAM available</li>
+<li>Increase resources if needed:</li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#tutorials-000-setup-__codelineno-19-1"></a>crc<span class="w"> </span>config<span class="w"> </span><span class="nb">set</span><span class="w"> </span>cpus<span class="w"> </span><span class="m">6</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#tutorials-000-setup-__codelineno-19-2"></a>crc<span class="w"> </span>config<span class="w"> </span><span class="nb">set</span><span class="w"> </span>memory<span class="w"> </span><span class="m">12288</span>
+</span></code></pre></div>
+<hr />
+<h2 id="tutorials-000-setup-quick-reference">Quick Reference</h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#tutorials-000-setup-__codelineno-20-1"></a><span class="c1"># CRC Management</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#tutorials-000-setup-__codelineno-20-2"></a>crc<span class="w"> </span>start<span class="w">                                                         </span><span class="c1"># Start OpenShift Local</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#tutorials-000-setup-__codelineno-20-3"></a>crc<span class="w"> </span>stop<span class="w">                                                          </span><span class="c1"># Stop the cluster</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#tutorials-000-setup-__codelineno-20-4"></a>crc<span class="w"> </span>status<span class="w">                                                        </span><span class="c1"># Check cluster status</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#tutorials-000-setup-__codelineno-20-5"></a>crc<span class="w"> </span>console<span class="w"> </span>--credentials<span class="w">                                         </span><span class="c1"># Show login credentials</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#tutorials-000-setup-__codelineno-20-6"></a>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#tutorials-000-setup-__codelineno-20-7"></a><span class="c1"># oc CLI</span>
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#tutorials-000-setup-__codelineno-20-8"></a><span class="nb">eval</span><span class="w"> </span><span class="k">$(</span>crc<span class="w"> </span>oc-env<span class="k">)</span><span class="w">                                                </span><span class="c1"># Add oc to PATH</span>
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#tutorials-000-setup-__codelineno-20-9"></a>oc<span class="w"> </span>login<span class="w"> </span>-u<span class="w"> </span>developer<span class="w"> </span>-p<span class="w"> </span>developer<span class="w"> </span>https://api.crc.testing:6443<span class="w">   </span><span class="c1"># Log in as developer</span>
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#tutorials-000-setup-__codelineno-20-10"></a>oc<span class="w"> </span>whoami<span class="w">                                                         </span><span class="c1"># Current user</span>
+</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#tutorials-000-setup-__codelineno-20-11"></a>oc<span class="w"> </span>get<span class="w"> </span>nodes<span class="w">                                                      </span><span class="c1"># List nodes</span>
+</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#tutorials-000-setup-__codelineno-20-12"></a>oc<span class="w"> </span>get<span class="w"> </span>projects<span class="w">                                                   </span><span class="c1"># List projects</span>
+</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#tutorials-000-setup-__codelineno-20-13"></a>oc<span class="w"> </span>new-project<span class="w"> </span>my-project<span class="w">                                         </span><span class="c1"># Create project</span>
+</span></code></pre></div>
+<hr />
+<h2 id="tutorials-000-setup-next-steps">Next Steps</h2>
+<p>Continue to <a href="#tutorials-001-verify-cluster">Lab 001: Verify Cluster</a> to learn about cluster health monitoring.</p></section><section class="print-page" id="tutorials-001-verify-cluster" heading-number="2.2"><h1 id="tutorials-001-verify-cluster-001-verify-cluster-verifying-openshift-cluster-health">001-Verify-Cluster — Verifying OpenShift Cluster Health</h1>
 <p>This module covers verifying the OpenShift cluster health and checking that all components are running properly.</p>
 <h2 id="tutorials-001-verify-cluster-objectives">Objectives</h2>
 <ul>
