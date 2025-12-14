@@ -217,6 +217,26 @@ Let's intentionally cause a build failure to practice troubleshooting:
 
 ---
 
+
+## CLI Option: Using oc
+
+Perform common S2I build and deploy actions via CLI. This sequence switches to your project, creates an S2I app from Git, tails the first build logs, inspects build/deploy resources, triggers another build, exposes a route, and prints the application URL:
+
+```bash
+oc project lab-003-demo
+oc new-app https://github.com/nodeshift-starters/devfile-sample.git --name=devfile-sample --strategy=source
+oc logs -f build/devfile-sample-1
+oc get is
+oc get deploy
+oc start-build devfile-sample --wait --follow
+oc expose svc/devfile-sample
+oc get route devfile-sample -o jsonpath='{.spec.host}{"\n"}'
+```
+
+
+
+---
+
 ## Key Concepts
 
 ### BuildConfig

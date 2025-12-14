@@ -199,6 +199,21 @@ Remove the application to keep your project clean:
 
 ---
 
+## CLI Option: Using oc
+
+You can deploy the same image and expose it via the CLI. This sequence switches to your project, creates the app from an image, exposes it via a Route, retrieves the public URL, checks status, and scales the deployment:
+
+```bash
+oc project lab-003-demo
+oc new-app docker.io/hitibash/simple-web-app:latest --name=simple-web-app
+oc expose svc/simple-web-app
+oc get route simple-web-app -o jsonpath='{.spec.host}{"\n"}'
+oc get pods
+oc logs deploy/simple-web-app
+oc scale deploy/simple-web-app --replicas=2
+```
+
+
 ## Next Steps
 
 Continue to [Lab 005: Building from Source Code](../005-docker-pipeline/README.md) to learn how OpenShift can build container images directly from Git repositories.

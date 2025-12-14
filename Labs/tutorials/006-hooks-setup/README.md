@@ -58,8 +58,18 @@ This lab is conceptual and requires no actions. The summary below explains how w
 - In your own Git repo: Settings → Webhooks → Add webhook → paste the URL.
 - Push a commit to test; the Build should start automatically if permissions are correct.
 
+---
+
+## CLI Option: Using oc
+
+Useful Build webhook and automation commands. This sequence shows webhook details for a `BuildConfig`, triggers a build (as a webhook would), and waits for the deployment rollout:
+
+```bash
+oc get bc/devfile-sample -o jsonpath='{.spec.triggers[?(@.type=="GitHub")]..github.secret}{"\n"}'
+oc describe bc/devfile-sample | sed -n '/Webhooks/,$p'
+oc start-build devfile-sample --wait --follow
+oc rollout status deploy/devfile-sample
+```
+
 ## Next
 - Continue to [Lab 007: Image Streams and Tagging](../007-images-imagestream/README.md).
-
-
----
