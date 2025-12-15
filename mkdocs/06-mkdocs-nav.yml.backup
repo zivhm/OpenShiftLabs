@@ -1,0 +1,13 @@
+###
+### mkdocs-nav.yml
+###
+
+nav:
+  - "OpenShift Labs":
+    - "OpenShift Labs": tutorials/README.md
+    - "Lab 007: ImageStreams and Tagging": tutorials/007-images-imagestream/README.md
+    - "Lab 008: Deployments": tutorials/008-deploying/README.md
+    - "Lab 009: Services and Routes": tutorials/009-services-routes/README.md
+    - "Lab 010: Monitoring with Prometheus and Grafana": tutorials/010-monitoring/README.md
+    - "Lab 011: Centralized Logging (EFK/ELK)": tutorials/011-logging/README.md
+    - "Lab 012: Scaling (Manual and HPA)": tutorials/012-scaling/README.md
